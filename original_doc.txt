@@ -1,0 +1,105 @@
+**SOFTWARE LICENSE AGREEMENT**
+
+This Software License Agreement (hereinafter referred to as "Agreement") is made and entered into as of the effective date by and between [Licensor's Name], a [State] corporation, having its principal place of business at [Address] (hereinafter referred to as "Licensor"), and [Licensee's Name], a [State] corporation, having its principal place of business at [Address] (hereinafter referred to as "Licensee").
+
+**1. DEFINITIONS**
+
+1.1 "Software" means the computer programs, applications, and related documentation that are licensed under this Agreement and identified in Exhibit A attached hereto.
+
+1.2 "Documentation" refers to any user manuals, technical manuals, and any other materials provided by Licensor that describe the functionality, use, or specification of the Software.
+
+1.3 "License Fee" means the fee payable by Licensee to Licensor for the use of the Software as set forth in Exhibit B.
+
+1.4 "Confidential Information" refers to all information exchanged between the parties in connection with this Agreement, which is either marked as confidential or would reasonably be understood to be confidential.
+
+1.5 "Effective Date" means the date this Agreement is signed by both parties.
+
+**2. TERMS AND CONDITIONS**
+
+2.1 **Grant of License**: Subject to the terms and conditions of this Agreement, Licensor hereby grants to Licensee a non-exclusive, non-transferable, limited license to use the Software solely for Licensee's internal business purposes.
+
+2.2 **Restrictions on Use**: Licensee shall not, and shall not permit any third party to: (i) reverse engineer, decompile, or disassemble the Software; (ii) modify or create derivative works based on the Software; (iii) distribute, sublicense, rent, lease, or lend the Software to any third party; or (iv) use the Software in a service bureau, time-sharing, or similar arrangement.
+
+2.3 **License Fee**: Licensee agrees to pay the License Fee in accordance with the payment terms set forth in Exhibit B. All payments are non-refundable except as expressly provided in this Agreement.
+
+2.4 **Delivery and Installation**: Licensor shall deliver the Software to Licensee electronically within [number] days of the Effective Date. Licensee is responsible for installation of the Software unless otherwise agreed in writing.
+
+**3. MAINTENANCE AND SUPPORT**
+
+3.1 **Support Services**: Licensor shall provide Licensee with support services as described in Exhibit C. Such support services shall be provided for a period of [duration] from the Effective Date, subject to Licensee's payment of applicable support fees.
+
+3.2 **Updates and Upgrades**: Licensor may, at its sole discretion, provide Licensee with updates and upgrades to the Software. Any updates or upgrades provided shall be considered part of the Software and subject to the terms of this Agreement.
+
+**4. INTELLECTUAL PROPERTY RIGHTS**
+
+4.1 **Ownership**: Licensor retains all right, title, and interest in and to the Software and Documentation, including all intellectual property rights therein. Licensee acknowledges that it is acquiring only a limited license to use the Software and Documentation.
+
+4.2 **Protection of Rights**: Licensee agrees to take all reasonable steps to protect the Software and Documentation from unauthorized copying or use. Licensee shall promptly notify Licensor of any unauthorized use or breach of security.
+
+**5. CONFIDENTIALITY**
+
+5.1 **Obligations**: The parties agree to keep all Confidential Information confidential and not to disclose such information to any third party, except as required by law or with the other party’s prior written consent.
+
+5.2 **Exceptions**: The obligations of confidentiality shall not apply to information that: (i) is or becomes publicly available through no fault of the receiving party; (ii) was rightfully in the possession of the receiving party prior to disclosure; (iii) is received by the receiving party from a third party without breach of any obligation of confidentiality; or (iv) is independently developed by the receiving party.
+
+**6. WARRANTIES AND DISCLAIMERS**
+
+6.1 **Limited Warranty**: Licensor warrants that the Software will perform substantially in accordance with the Documentation for a period of [duration] from the Effective Date. If the Software does not conform to this warranty, Licensor shall, at its option, repair or replace the Software.
+
+6.2 **Disclaimer of Warranties**: Except for the express warranties set forth in this Agreement, the Software and Documentation are provided "AS IS" and Licensor disclaims all other warranties, whether express or implied, including, without limitation, any implied warranties of merchantability or fitness for a particular purpose.
+
+**7. LIMITATION OF LIABILITY**
+
+7.1 **Exclusion of Damages**: In no event shall Licensor be liable for any indirect, incidental, special, consequential, or punitive damages, including, without limitation, loss of profits, data, or use, incurred by Licensee or any third party, whether in an action in contract or tort, even if Licensor has been advised of the possibility of such damages.
+
+7.2 **Limitation of Liability**: Licensor’s total liability for damages under this Agreement shall not exceed the amount of License Fees paid by Licensee to Licensor under this Agreement.
+
+**8. TERM AND TERMINATION**
+
+8.1 **Term**: This Agreement shall commence on the Effective Date and shall continue in effect unless terminated in accordance with the provisions of this Section.
+
+8.2 **Termination for Convenience**: Either party may terminate this Agreement for any reason upon [number] days written notice to the other party.
+
+8.3 **Termination for Cause**: Either party may terminate this Agreement immediately upon written notice if the other party materially breaches this Agreement and fails to cure such breach within [number] days of receipt of notice of the breach.
+
+8.4 **Effect of Termination**: Upon termination of this Agreement, Licensee shall immediately cease all use of the Software and Documentation, and return or destroy all copies of the Software and Documentation in its possession.
+
+**9. MISCELLANEOUS**
+
+9.1 **Governing Law**: This Agreement shall be governed by and construed in accordance with the laws of the State of [State], without regard to its conflict of laws principles.
+
+9.2 **Entire Agreement**: This Agreement constitutes the entire agreement between the parties with respect to the subject matter hereof and supersedes all prior agreements, understandings, and negotiations, whether written or oral, relating to such subject matter.
+
+9.3 **Amendments**: No amendment or modification of this Agreement shall be valid or binding unless made in writing and signed by duly authorized representatives of both parties.
+
+9.4 **Severability**: If any provision of this Agreement is held to be invalid or unenforceable, such provision shall be construed to reflect the parties' original intent, and the remaining provisions shall remain in full force and effect.
+
+9.5 **Waiver**: No waiver of any term or condition of this Agreement shall be valid or binding unless in writing and signed by the party to be charged. No waiver of any breach or default shall constitute a waiver of any subsequent breach or default.
+
+9.6 **Assignment**: Licensee may not assign this Agreement or any of its rights or obligations hereunder without the prior written consent of Licensor, which shall not be unreasonably withheld.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.
+
+[Licensor's Name]  
+By: __________________________  
+Name: ________________________  
+Title: _________________________  
+Date: _________________________  
+
+[Licensee's Name]  
+By: __________________________  
+Name: ________________________  
+Title: _________________________  
+Date: _________________________  
+
+**Exhibit A: Software Description**
+
+[Insert detailed description of the Software]
+
+**Exhibit B: License Fees**
+
+[Insert details of the License Fees and payment terms]
+
+**Exhibit C: Support Services**
+
+[Insert details of the support services provided by Licensor]

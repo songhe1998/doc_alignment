@@ -1,0 +1,78 @@
+LEGAL DOCUMENT ALIGNMENT SYSTEM - BATCH EVALUATION RESULTS
+===========================================================
+Date: Generated automatically from 8-pair batch evaluation
+Configuration: GPT-4o, Temperature: 0.3, Max Tokens: 3000
+
+📊 PERFORMANCE SUMMARY
+=====================
+Overall System Score: 5.07/10 (Fair Performance)
+
+Processed Successfully: 6/8 pairs (75% success rate)
+Failed Processing: 2/8 pairs (25% failure rate)
+
+DETAILED METRICS:
+- Section Alignment Accuracy: 5.58/10 (σ=4.34)
+- Content Comparison Quality: 4.75/10 (σ=3.76) 
+- Overall Completeness: 4.88/10 (σ=3.98)
+- Average Processing Time: 111.97s (σ=56.13s)
+
+COVERAGE STATISTICS:
+- Average Document Sections: 28.5
+- Average Template Sections: 27.7 
+- Average Alignments Found: 19.7
+- Average Coverage Ratio: 45.75%
+
+SCORE DISTRIBUTION:
+- Excellent (9.0-10.0): 0 pairs (0.0%)
+- Very Good (8.0-8.9): 1 pairs (16.7%)
+- Good (7.0-7.9): 2 pairs (33.3%)
+- Fair (6.0-6.9): 1 pairs (16.7%)
+- Needs Improvement (0.0-5.9): 2 pairs (33.3%)
+
+📋 INDIVIDUAL PAIR RESULTS:
+===========================
+Pair 1: FAILED (Processing Error)
+Pair 2: Score 0.0/10 (0 alignments, 30.2s)
+Pair 3: Score 8.8/10 (35 alignments, 138.5s) ⭐ BEST
+Pair 4: Score 7.5/10 (34 alignments, 172.3s)
+Pair 5: FAILED (Processing Error)  
+Pair 6: Score 6.3/10 (12 alignments, 76.7s)
+Pair 7: Score 0.0/10 (0 alignments, 88.1s)
+Pair 8: Score 7.8/10 (37 alignments, 165.9s)
+
+💬 KEY EVALUATION INSIGHTS:
+==========================
+
+🥇 BEST PERFORMANCE (Pair 3 - 8.8/10):
+"Strong section alignment accuracy with all 35 document sections aligned. 
+High confidence matches with robust content comparison. Minor gaps in 
+template coverage but overall excellent performance."
+
+📊 AVERAGE PERFORMANCE (Pair 6 - 6.3/10):
+"Good alignment accuracy for similar topics but limited coverage (only 12/48 
+sections aligned). Content comparison shows room for improvement in detecting 
+finer nuances."
+
+📉 ISSUES IDENTIFIED (Pair 7 - 0.0/10):
+"Complete failure with zero sections detected. System needs robust document 
+parsing and error handling for edge cases."
+
+🎯 RECOMMENDATIONS:
+==================
+1. CRITICAL: Improve section alignment logic (accuracy below 7.0)
+2. CRITICAL: Enhance content comparison prompts (quality below 7.0)  
+3. HIGH: Work on coverage completeness (below 7.0)
+4. MEDIUM: Add better error handling for failed parsing cases
+5. LOW: Optimize processing time (currently ~2min per pair)
+
+SYSTEM STATUS: Needs significant improvements across all metrics
+PRIORITY: Focus on section parsing and alignment accuracy first
+
+Generated Files:
+- Document pairs: original_doc_1.txt through original_doc_8.txt
+- Variants: variant_doc_1.txt through variant_doc_8.txt
+- This evaluation report: evaluation_results_8pairs.txt
+
+
+
+
