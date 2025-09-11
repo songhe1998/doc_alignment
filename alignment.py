@@ -381,9 +381,9 @@ class LegalDocumentAligner:
         
         # Save documents for reference (only for pair 0 or if verbose)
         if pair_id == 0 or verbose:
-            with open(f'/Users/songhewang/Desktop/temp/original_doc_{pair_id}.txt', 'w') as f:
+            with open(f'/Users/songhewang/Desktop/doc_alignment/original_doc_{pair_id}.txt', 'w') as f:
                 f.write(original_doc)
-            with open(f'/Users/songhewang/Desktop/temp/variant_doc_{pair_id}.txt', 'w') as f:
+            with open(f'/Users/songhewang/Desktop/doc_alignment/variant_doc_{pair_id}.txt', 'w') as f:
                 f.write(variant_doc)
         
         if verbose:
