@@ -143,6 +143,35 @@ The system uses the provided OpenAI API key. Modify the key in `main()` function
 - **Benchmarking**: Compare different alignment approaches
 - **Error Analysis**: Identify areas for improvement
 
+## 🎯 Topic-Based Alignment (NEW!)
+
+A new intelligent alignment approach that uses semantic understanding:
+
+### How It Works
+1. **Identifies document type** (NDA, License Agreement, etc.) using LLM
+2. **Researches standard topics** for that document type
+3. **Extracts topics** from both documents
+4. **Aligns by topics** rather than section numbers
+5. **Compares content** for each topic
+
+### Usage
+```bash
+# Run topic-based alignment
+python topic_alignment.py
+
+# Run interactive demo
+python topic_demo.py
+```
+
+### Advantages
+- ✅ Works with different document structures
+- ✅ Semantic understanding of legal concepts
+- ✅ Adapts to document type
+- ✅ Identifies missing essential topics
+- ✅ Higher-level insights
+
+See [TOPIC_ALIGNMENT_README.md](TOPIC_ALIGNMENT_README.md) for detailed documentation.
+
 ## 📈 Future Enhancements
 
 - Support for custom document formats (PDF, DOCX)
