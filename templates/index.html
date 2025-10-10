@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Document Alignment Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📄 Legal Document Alignment Tool</h1>
+            <p class="subtitle">Compare legal documents using AI-powered semantic analysis</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <h2>📤 Upload Documents</h2>
+                <form id="alignmentForm" enctype="multipart/form-data">
+                    <div class="file-input-group">
+                        <div class="file-input-wrapper">
+                            <label for="doc1">Document 1 (TXT or PDF)</label>
+                            <input type="file" id="doc1" name="doc1" accept=".txt,.pdf" required>
+                            <span class="file-name" id="file1Name">No file selected</span>
+                        </div>
+                        
+                        <div class="file-input-wrapper">
+                            <label for="doc2">Document 2 (TXT or PDF)</label>
+                            <input type="file" id="doc2" name="doc2" accept=".txt,.pdf" required>
+                            <span class="file-name" id="file2Name">No file selected</span>
+                        </div>
+                    </div>
+
+                    <div class="method-selection">
+                        <h3>Select Alignment Method</h3>
+                        <div class="radio-group">
+                            <label class="radio-card">
+                                <input type="radio" name="method" value="section" checked>
+                                <div class="radio-content">
+                                    <strong>📋 Section-Based</strong>
+                                    <p>Aligns documents by matching section numbers and titles</p>
+                                    <span class="tag">Fast</span>
+                                </div>
+                            </label>
+
+                            <label class="radio-card">
+                                <input type="radio" name="method" value="topic_template">
+                                <div class="radio-content">
+                                    <strong>📚 Topic-Based (Template)</strong>
+                                    <p>Uses standard legal topics to find matches</p>
+                                    <span class="tag">Comprehensive</span>
+                                </div>
+                            </label>
+
+                            <label class="radio-card">
+                                <input type="radio" name="method" value="topic_direct">
+                                <div class="radio-content">
+                                    <strong>🎯 Topic-Based (Direct)</strong>
+                                    <p>Extracts topics from documents and aligns semantically</p>
+                                    <span class="tag">Flexible</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span class="btn-text">🚀 Align Documents</span>
+                        <span class="btn-loader" style="display: none;">⏳ Processing...</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section" id="resultsSection" style="display: none;">
+                <h2>📊 Alignment Results</h2>
+                <div id="resultsContent"></div>
+            </div>
+
+            <!-- Error Section -->
+            <div class="error-section" id="errorSection" style="display: none;">
+                <h3>❌ Error</h3>
+                <p id="errorMessage"></p>
+            </div>
+        </div>
+
+        <footer>
+            <div class="info-section">
+                <h3>ℹ️ About the Methods</h3>
+                <div class="method-info">
+                    <div class="info-card">
+                        <h4>📋 Section-Based Alignment</h4>
+                        <ul>
+                            <li>Extracts numbered sections (1.1, 2.3, etc.)</li>
+                            <li>Matches sections by semantic similarity</li>
+                            <li>Best for documents with similar structures</li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <h4>📚 Topic-Based (Template)</h4>
+                        <ul>
+                            <li>Identifies document type (NDA, License, etc.)</li>
+                            <li>Uses standard legal topics as reference</li>
+                            <li>Shows what's missing from standards</li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <h4>🎯 Topic-Based (Direct)</h4>
+                        <ul>
+                            <li>Extracts topics directly from documents</li>
+                            <li>No predefined templates needed</li>
+                            <li>Best for comparing unique documents</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <p class="footer-text">Powered by OpenAI GPT-4o | Built with ❤️ for legal document analysis</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
+

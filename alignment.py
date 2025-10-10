@@ -114,9 +114,9 @@ class LegalDocumentAligner:
             if not line:
                 continue
                 
-            # Check for main section headers like "**1. DEFINITIONS**" or "1. DEFINITIONS"
-            main_section_match = re.match(r'^\*\*(\d+)\.\s+([A-Z][A-Z\s\-\/]+)\*\*$', line) or \
-                               re.match(r'^(\d+)\.\s+([A-Z][A-Z\s\-\/]+)$', line)
+            # Check for main section headers like "**1. DEFINITIONS**" or "1. DEFINITIONS" or "1. Definition of Something"
+            main_section_match = re.match(r'^\*\*(\d+)\.\s+(.+)\*\*$', line) or \
+                               re.match(r'^(\d+)\.\s+([A-Z][A-Za-z\s\-\/\(\)]+?)\.?$', line)
             if main_section_match:
                 # Save previous section if exists
                 if current_section:

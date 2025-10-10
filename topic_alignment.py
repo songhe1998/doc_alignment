@@ -196,9 +196,9 @@ Return only the JSON array, no other text."""
             if not line:
                 continue
                 
-            # Check for main section headers
-            main_section_match = re.match(r'^\*\*(\d+)\.\s+([A-Z][A-Z\s\-\/]+)\*\*$', line) or \
-                               re.match(r'^(\d+)\.\s+([A-Z][A-Z\s\-\/]+)$', line)
+            # Check for main section headers (support mixed case too)
+            main_section_match = re.match(r'^\*\*(\d+)\.\s+(.+)\*\*$', line) or \
+                               re.match(r'^(\d+)\.\s+([A-Z][A-Za-z\s\-\/\(\)]+?)\.?$', line)
             if main_section_match:
                 if current_section:
                     sections[current_section] = (current_title, '\n'.join(current_content).strip())
