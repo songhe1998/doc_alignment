@@ -1,0 +1,63 @@
+================================================================================
+NDA DOCUMENT ALIGNMENT RESULTS
+================================================================================
+
+Document Type: Non-Disclosure Agreement
+Confidence: high
+Key Characteristics:
+  - Title explicitly states 'NON-DISCLOSURE AGREEMENT'
+  - Involves protection of confidential information
+  - Mentions parties as 'Discloser' and 'Recipient'
+  - References internal policies and laws for information protection
+  - Includes clauses related to sensitive information and public disclosure exemptions
+
+STANDARD TOPICS:
+--------------------------------------------------------------------------------
+
+Definitions (essential):
+  Clarifies the specific terms used throughout the agreement.
+
+Confidential Information (essential):
+  Specifies what constitutes confidential information under the agreement.
+
+Obligations of Receiving Party (essential):
+  Outlines the responsibilities of the party receiving confidential information.
+
+Term and Termination (essential):
+  Defines the duration of the agreement and conditions under which it may be terminated.
+
+Return or Destruction of Information (common):
+  Details the process for returning or destroying confidential information upon termination of the agreement.
+
+Remedies (common):
+  Describes the remedies available in case of a breach of the agreement.
+
+Exclusions (common):
+  Lists situations where confidentiality obligations do not apply.
+
+Governing Law (common):
+  Specifies the jurisdiction and legal framework governing the agreement.
+
+Dispute Resolution (optional):
+  Outlines the process for resolving disputes related to the agreement.
+
+Amendments (optional):
+  Describes the process for making changes to the agreement.
+
+Entire Agreement (common):
+  States that the agreement represents the entire understanding between the parties.
+
+No Waiver (optional):
+  Clarifies that failure to enforce any provision does not constitute a waiver of rights.
+
+Severability (common):
+  Ensures that if one part of the agreement is invalid, the rest remains in effect.
+
+Notices (optional):
+  Specifies how communications should be made between the parties.
+
+Assignment (optional):
+  Describes the conditions under which rights and obligations can be transferred to another party.
+
+TOPIC ALIGNMENTS:
+================================================================================

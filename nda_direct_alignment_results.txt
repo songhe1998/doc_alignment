@@ -1,0 +1,197 @@
+================================================================================
+DIRECT TOPIC-BASED ALIGNMENT RESULTS
+(Without Standard Topic Templates)
+================================================================================
+
+Topics in both: 4
+Only in NDA 1: 1
+Only in NDA 2: 4
+High similarity: 2, Medium: 4, Low: 3
+
+================================================================================
+NDA 1 (JEA) TOPICS
+================================================================================
+
+1. Confidential Information Definition
+   Description: This topic defines what constitutes confidential information under the agreement.
+   Key Points: Confidential Information includes proprietary data not generally known to the public., It covers Critical Infrastructure Information, Personal Identifiable Information, and more., Excludes information required to be disclosed by law or regulation.
+   Content: Confidential Information means any data or information that is proprietary to the Parties and not generally known to the public, including Critical Infrastructure Information, Protected Health Informa...
+
+2. Non-Disclosure Obligations
+   Description: This topic outlines the obligations of the parties to maintain confidentiality.
+   Key Points: Limit disclosure to representatives with a need to know., Use a reasonable degree of care to keep information confidential., Prohibit disclosure to third parties unless otherwise provided.
+   Content: The Parties will limit disclosure of any Confidential Information to its representatives who have a need to know such information in connection with the Transaction, and only for that purpose....
+
+3. Florida Sunshine Law Exemptions
+   Description: This topic addresses how the agreement interacts with Florida Sunshine Laws.
+   Key Points: Certain information is exempt from public disclosure under Florida Sunshine Laws., Exemptions include security measures and information technology systems., The agreement does not supersede Florida Sunshine Law provisions.
+   Content: This agreement applies to disclosure of the protected information that is exempt from Florida Sunshine Law disclosure and in no shape or manner would this agreement supersede the provisions of Florida...
+
+4. Purpose of the Agreement
+   Description: This topic explains the purpose of entering into the non-disclosure agreement.
+   Key Points: Recipient desires to work with the Discloser and view documents related to a transaction., Discloser is required to protect sensitive and confidential information., The agreement facilitates the sharing of information necessary for the transaction.
+   Content: The Recipient desires to work with the Discloser and/or view documents regarding the Transaction; and the Discloser is required by its internal policies, state and federal laws to ensure that sensitiv...
+
+5. Security and Technology Information
+   Description: This topic covers the protection of security and technology-related information.
+   Key Points: Information related to utility security and technology is protected., Disclosure could facilitate unauthorized access or damage., Includes security of networks, computers, and data.
+   Content: Information related to the security of the technology, processes, or practices of a utility owned or operated by a unit of local government that are designed to protect the utility’s networks, compute...
+
+
+================================================================================
+NDA 2 (Frodsham) TOPICS
+================================================================================
+
+1. Parties Involved
+   Description: This topic identifies the parties involved in the Non-Disclosure Agreement.
+   Key Points: The Discloser is Frodsham Town Council., The Recipient is the individual receiving the information., The agreement specifies the addresses of both parties.
+   Content: Parties: [NAME OF INDIVIDUAL RECEIVING INFORMATION] of [address of individual] and FRODSHAM TOWN COUNCIL whose registered office is at CASTLE PARK HOUSE, CASTLE PARK, FRODSHAM, WA6 6SB (the Discloser)...
+
+2. Purpose of Disclosure
+   Description: This topic outlines the specific purpose for which the Confidential Information is being disclosed.
+   Key Points: The information is disclosed for the recommendation of future land use., The specific site is the decommissioned play area on Ship Street., The Recipient must use the information solely for this purpose.
+   Content: The Discloser intends to disclose information (the Confidential Information) to the Recipient for the purpose of recommendation of future land use of the decommissioned play area on Ship Street (the P...
+
+3. Non-Disclosure Obligations
+   Description: This topic details the obligations of the Recipient to maintain the confidentiality of the information.
+   Key Points: The Recipient must not use the information for any other purpose., The Recipient must keep the information secure., Disclosure to third parties is prohibited.
+   Content: The Recipient undertakes not to use the Confidential Information for any purpose except the Purpose, without first obtaining the written agreement of the Discloser....
+
+4. Exceptions to Confidentiality
+   Description: This topic specifies the conditions under which the confidentiality obligations do not apply.
+   Key Points: Information in the public domain is not covered., Information already known to the Recipient is exempt., Legal or authority-required disclosures are allowed.
+   Content: The undertakings in clauses 2 and 3 above apply to all of the information disclosed by the Discloser to the Recipient... but they do not apply to: a) any information which is or in future comes into t...
+
+5. Return of Information
+   Description: This topic covers the obligations of the Recipient to return the Confidential Information upon request.
+   Key Points: The Recipient must return all copies and records., No copies or records may be retained by the Recipient., The return is upon request from the Discloser.
+   Content: The Recipient will, on request from the Discloser, return all copies and records of the Confidential Information to the Discloser and will not retain any copies or records of the Confidential Informat...
+
+6. Intellectual Property Rights
+   Description: This topic clarifies the intellectual property rights related to the disclosed information.
+   Key Points: No rights or licenses are granted to the Recipient., The Recipient can copy the information solely for the Purpose., The Discloser's intellectual property rights are protected.
+   Content: Neither this Agreement nor the supply of any information grants the Recipient any licence, interest or right in respect of any intellectual property rights of the Discloser except the right to copy th...
+
+7. Duration of Obligations
+   Description: This topic specifies the duration for which the confidentiality obligations remain in force.
+   Key Points: The obligations continue indefinitely., There is no specified end date for the obligations., The obligations are tied to the clauses 2 and 3.
+   Content: The undertakings in clauses 2 and 3 will continue in force indefinitely....
+
+8. Governing Law and Jurisdiction
+   Description: This topic identifies the legal framework governing the agreement and the jurisdiction for disputes.
+   Key Points: The agreement is governed by English law., The English Courts have non-exclusive jurisdiction., Disputes are to be resolved in accordance with English law.
+   Content: This Agreement is governed by, and is to be construed in accordance with, English law. The English Courts will have non-exclusive jurisdiction to deal with any dispute which has arisen or may arise ou...
+
+
+================================================================================
+TOPIC ALIGNMENTS
+================================================================================
+
+
+============================================================
+Alignment 1: MEDIUM
+============================================================
+
+NDA 1: Confidential Information Definition
+NDA 2: [Not Present]
+
+Rationale: The definition of confidential information is foundational to understanding the scope of non-disclosure obligations.
+
+Differences: Topic 'Confidential Information Definition' only appears in Document 1.
+
+
+============================================================
+Alignment 2: HIGH
+============================================================
+
+NDA 1: Non-Disclosure Obligations
+NDA 2: Non-Disclosure Obligations
+
+Rationale: Both topics outline the obligations of parties to maintain confidentiality under the agreement.
+
+Differences: Both documents address the restriction on the use and disclosure of confidential information, emphasizing its use solely for a specified purpose related to a transaction or agreement. Document 1 specifies that disclosure is limited to representatives with a "need to know" basis, focusing on internal control of information within the parties involved. In contrast, Document 2 explicitly requires the recipient to obtain written consent from the discloser before using the information for any purpose other than the agreed-upon one, suggesting a stricter control mechanism and an emphasis on obtaining prior approval for any deviation from the original purpose.
+
+
+============================================================
+Alignment 3: MEDIUM
+============================================================
+
+NDA 1: Florida Sunshine Law Exemptions
+NDA 2: Exceptions to Confidentiality
+
+Rationale: The Florida Sunshine Law exemptions relate to exceptions to confidentiality obligations.
+
+Differences: Both documents address exceptions to the general rule of confidentiality or disclosure, highlighting circumstances under which information may not be protected. Document 1 specifically refers to exemptions under the Florida Sunshine Law, emphasizing that the agreement does not override legal provisions for public disclosure. In contrast, Document 2 outlines broader exceptions to confidentiality, such as information already in the public domain or known to the recipient, without reference to specific legal statutes. This indicates a more general approach in Document 2 compared to the legal specificity in Document 1.
+
+
+============================================================
+Alignment 4: HIGH
+============================================================
+
+NDA 1: Purpose of the Agreement
+NDA 2: Purpose of Disclosure
+
+Rationale: Both topics explain the purpose behind disclosing and protecting confidential information.
+
+Differences: Both documents address the purpose of sharing information between parties, emphasizing the need for confidentiality. However, Document 1 focuses on the Recipient's desire to work with the Discloser and the necessity to comply with internal policies and legal requirements to protect sensitive information, suggesting a broader and more compliance-driven approach. In contrast, Document 2 specifically outlines the purpose of disclosure as related to recommending future land use for a specific location, indicating a narrower and more targeted objective.
+
+
+============================================================
+Alignment 5: MEDIUM
+============================================================
+
+NDA 1: Security and Technology Information
+NDA 2: Intellectual Property Rights
+
+Rationale: Protection of security and technology information is related to intellectual property rights.
+
+Differences: Both documents address the protection of sensitive information, but they do so in different contexts. Document 1 focuses on safeguarding the security of technology and data within utility networks from external threats, emphasizing protective measures against unauthorized access. In contrast, Document 2 deals with the protection of intellectual property rights, specifically limiting the recipient's rights to use confidential information, highlighting legal boundaries rather than technical security measures. Notably, Document 1 is concerned with the operational security of technological systems, whereas Document 2 is focused on the legal aspects of information sharing and intellectual property.
+
+
+============================================================
+Alignment 6: LOW
+============================================================
+
+NDA 1: [Not Present]
+NDA 2: Parties Involved
+
+Rationale: Identifying the parties involved is a basic component of any agreement, though not directly related to specific topics in Document 1.
+
+Differences: Topic 'Parties Involved' only appears in Document 2.
+
+
+============================================================
+Alignment 7: LOW
+============================================================
+
+NDA 1: [Not Present]
+NDA 2: Return of Information
+
+Rationale: The return of information is a procedural aspect not covered by specific topics in Document 1.
+
+Differences: Topic 'Return of Information' only appears in Document 2.
+
+
+============================================================
+Alignment 8: MEDIUM
+============================================================
+
+NDA 1: [Not Present]
+NDA 2: Duration of Obligations
+
+Rationale: The duration of obligations is a key aspect of non-disclosure agreements, complementing the obligations outlined in Document 1.
+
+Differences: Topic 'Duration of Obligations' only appears in Document 2.
+
+
+============================================================
+Alignment 9: LOW
+============================================================
+
+NDA 1: [Not Present]
+NDA 2: Governing Law and Jurisdiction
+
+Rationale: Governing law and jurisdiction provide legal context, which is not specifically addressed in Document 1.
+
+Differences: Topic 'Governing Law and Jurisdiction' only appears in Document 2.
+

@@ -1,0 +1,196 @@
+================================================================================
+NDA TOPIC-BASED COMPARISON RESULTS
+================================================================================
+
+Coverage: 3/15 topics in both NDAs
+Confidence: 3 high, 0 medium, 12 low
+
+
+============================================================
+Topic: Definitions
+============================================================
+Present in NDA 1: True
+Present in NDA 2: True
+Confidence: high
+
+NDA 1 Content:
+The document includes a section titled 'Definition of Confidential Information,' which clarifies key terms used throughout the agreement. It specifies that 'Confidential Information' includes proprietary data or information not generally known to the public, such as Critical Infrastructure Information, Protected Health Information, and Personal Identifiable Information.
+
+NDA 2 Content:
+The document includes a definition of 'Confidential Information' in clause 1, specifying it as the information the Discloser intends to share with the Recipient for a specific purpose. This definition is crucial for understanding the obligations and scope of the agreement.
+
+Comparison:
+NDA 1 provides a detailed definition of 'Confidential Information' by listing specific types of information, such as Critical Infrastructure Information and Protected Health Information, thereby offering a clear scope of what is considered confidential. In contrast, NDA 2 offers a more general definition, focusing on the intent of the Discloser and the specific purpose of sharing the information, which may leave room for broader interpretation. Confidence in the comparison is "high," as both documents clearly address the topic of defining 'Confidential Information,' albeit with different levels of specificity.
+
+============================================================
+Topic: Confidential Information
+============================================================
+Present in NDA 1: True
+Present in NDA 2: True
+Confidence: high
+
+NDA 1 Content:
+The document addresses the topic of 'Confidential Information' by defining it as any data or information proprietary to the parties and not generally known to the public. It includes specific categories such as Critical Infrastructure Information, Protected Health Information, and Personal Identifiable Information, which are subject to protection under the agreement.
+
+NDA 2 Content:
+The document specifies that 'Confidential Information' is information disclosed by the Discloser to the Recipient for a specific purpose. It outlines the obligations of the Recipient to not use or disclose the information for any other purpose and to keep it secure, except under certain conditions such as legal requirements or prior knowledge without obligation of confidence.
+
+Comparison:
+NDA 1 defines "Confidential Information" broadly, encompassing specific categories like Critical Infrastructure Information and Personal Identifiable Information, emphasizing its proprietary nature and protection under the agreement. In contrast, NDA 2 focuses on the purpose-specific disclosure of information, detailing the Recipient's obligations to maintain confidentiality unless exceptions such as legal requirements apply. Confidence in the comparison is "high," as both documents clearly address the topic, albeit with different emphases on scope and obligations.
+
+============================================================
+Topic: Obligations of Receiving Party
+============================================================
+Present in NDA 1: False
+Present in NDA 2: True
+Confidence: low
+
+NDA 2 Content:
+The document outlines the obligations of the Receiving Party by stating that the Recipient must not use the Confidential Information for any purpose other than the specified Purpose and must keep it secure without disclosing it to any third party. Additionally, the Recipient is required to return all copies of the Confidential Information upon request and is prohibited from retaining any copies.
+
+Comparison:
+Topic only present in NDA 2
+
+============================================================
+Topic: Exclusions from Confidential Information
+============================================================
+Present in NDA 1: False
+Present in NDA 2: True
+Confidence: low
+
+NDA 2 Content:
+The document addresses exclusions from confidential information in clause 4, specifying that the confidentiality obligations do not apply to information that is or becomes public domain or was already known to the recipient without any confidentiality obligation before disclosure.
+
+Comparison:
+Topic only present in NDA 2
+
+============================================================
+Topic: Term and Duration
+============================================================
+Present in NDA 1: False
+Present in NDA 2: True
+Confidence: low
+
+NDA 2 Content:
+The document addresses the topic of 'Term and Duration' in clause 8, which states that the confidentiality obligations outlined in clauses 2 and 3 will continue indefinitely. This implies that the obligations last both during and after the agreement without a specified end date.
+
+Comparison:
+Topic only present in NDA 2
+
+============================================================
+Topic: Permitted Disclosures
+============================================================
+Present in NDA 1: True
+Present in NDA 2: True
+Confidence: high
+
+NDA 1 Content:
+The document addresses 'Permitted Disclosures' by outlining exemptions under the Florida Sunshine Law where certain confidential information can be disclosed. It specifies that information related to security measures, technology systems, and periodic audits are exempt from public disclosure, thereby permitting disclosure under specific legal requirements.
+
+NDA 2 Content:
+The document addresses 'Permitted Disclosures' in clause 5, which states that the Recipient is allowed to disclose the Confidential Information if required by law or any competent authority. This outlines a circumstance under which confidential information may be disclosed legally.
+
+Comparison:
+NDA 1 specifically addresses 'Permitted Disclosures' by detailing exemptions under the Florida Sunshine Law, focusing on particular types of information such as security measures and technology systems that can be disclosed under specific legal conditions. In contrast, NDA 2 provides a broader clause allowing disclosure of confidential information if required by law or a competent authority, without specifying particular types of information or legal frameworks. The key difference lies in NDA 1's focus on specific exemptions under a particular law, while NDA 2 offers a general legal compliance clause. Confidence: high, as both documents clearly address the topic of permitted disclosures.
+
+============================================================
+Topic: Return or Destruction of Information
+============================================================
+Present in NDA 1: False
+Present in NDA 2: True
+Confidence: low
+
+NDA 2 Content:
+The document covers the topic in clause 6, which requires the Recipient to return all copies and records of the Confidential Information to the Discloser upon request and prohibits retaining any copies or records of the Confidential Information.
+
+Comparison:
+Topic only present in NDA 2
+
+============================================================
+Topic: Remedies for Breach
+============================================================
+Present in NDA 1: False
+Present in NDA 2: False
+Confidence: low
+
+Comparison:
+Topic not found in either NDA
+
+============================================================
+Topic: No License
+============================================================
+Present in NDA 1: False
+Present in NDA 2: True
+Confidence: low
+
+NDA 2 Content:
+The document addresses the topic in clause 7, which states that neither the agreement nor the supply of any information grants the Recipient any license, interest, or right in respect of any intellectual property rights of the Discloser, except for the right to copy the Confidential Information solely for the specified purpose.
+
+Comparison:
+Topic only present in NDA 2
+
+============================================================
+Topic: Governing Law
+============================================================
+Present in NDA 1: False
+Present in NDA 2: True
+Confidence: low
+
+NDA 2 Content:
+The document specifies that the agreement is governed by English law and that the English Courts have non-exclusive jurisdiction to handle any disputes arising from the agreement. This addresses the topic of 'Governing Law' by clearly stating the applicable jurisdiction's laws for the agreement.
+
+Comparison:
+Topic only present in NDA 2
+
+============================================================
+Topic: Entire Agreement
+============================================================
+Present in NDA 1: False
+Present in NDA 2: False
+Confidence: low
+
+Comparison:
+Topic not found in either NDA
+
+============================================================
+Topic: Amendments
+============================================================
+Present in NDA 1: False
+Present in NDA 2: False
+Confidence: low
+
+Comparison:
+Topic not found in either NDA
+
+============================================================
+Topic: Non-Compete Clause
+============================================================
+Present in NDA 1: False
+Present in NDA 2: False
+Confidence: low
+
+Comparison:
+Topic not found in either NDA
+
+============================================================
+Topic: Non-Solicitation Clause
+============================================================
+Present in NDA 1: False
+Present in NDA 2: False
+Confidence: low
+
+Comparison:
+Topic not found in either NDA
+
+============================================================
+Topic: Dispute Resolution
+============================================================
+Present in NDA 1: False
+Present in NDA 2: True
+Confidence: low
+
+NDA 2 Content:
+The document addresses dispute resolution by stating that the agreement is governed by English law and that the English Courts will have non-exclusive jurisdiction to handle any disputes arising from or related to the agreement.
+
+Comparison:
+Topic only present in NDA 2
