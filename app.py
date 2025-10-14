@@ -123,7 +123,17 @@ def section_based_alignment(api_key, doc1_text, doc2_text):
     print(f"{'='*80}")
     import openai
     
-    client = openai.OpenAI(api_key=api_key)
+    # Initialize client with explicit settings to avoid proxy issues
+    try:
+        client = openai.OpenAI(api_key=api_key)
+    except TypeError as e:
+        # Fallback for older versions or proxy issues
+        print(f"⚠️ Client init warning: {e}, trying alternative...")
+        import httpx
+        client = openai.OpenAI(
+            api_key=api_key,
+            http_client=httpx.Client()
+        )
     
     # Truncate if too long
     max_len = 12000
@@ -199,7 +209,17 @@ def topic_template_alignment(api_key, doc1_text, doc2_text):
     import openai
     import json
     
-    client = openai.OpenAI(api_key=api_key)
+    # Initialize client with explicit settings to avoid proxy issues
+    try:
+        client = openai.OpenAI(api_key=api_key)
+    except TypeError as e:
+        # Fallback for older versions or proxy issues
+        print(f"⚠️ Client init warning: {e}, trying alternative...")
+        import httpx
+        client = openai.OpenAI(
+            api_key=api_key,
+            http_client=httpx.Client()
+        )
     
     # Truncate if needed
     max_len = 12000
@@ -372,7 +392,17 @@ def topic_direct_alignment(api_key, doc1_text, doc2_text):
     import openai
     import json
     
-    client = openai.OpenAI(api_key=api_key)
+    # Initialize client with explicit settings to avoid proxy issues
+    try:
+        client = openai.OpenAI(api_key=api_key)
+    except TypeError as e:
+        # Fallback for older versions or proxy issues
+        print(f"⚠️ Client init warning: {e}, trying alternative...")
+        import httpx
+        client = openai.OpenAI(
+            api_key=api_key,
+            http_client=httpx.Client()
+        )
     
     # Truncate if needed
     max_len = 12000
