@@ -1,18 +1,17 @@
 """
-Legal Document Alignment Web Application
-Allows users to compare documents using different alignment methods.
+Legal Document Alignment Web Application - IMPROVED VERSION
+Features side-by-side document view with color-coded alignments
 """
 
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify
 from werkzeug.utils import secure_filename
 import os
 import json
 from dotenv import load_dotenv
 import openai
-from alignment import LegalDocumentAligner
-from topic_alignment import TopicBasedAligner
 import PyPDF2
 from io import BytesIO
+import re
 
 # Load environment variables
 load_dotenv()
@@ -27,6 +26,14 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # Allowed file extensions
 ALLOWED_EXTENSIONS = {'txt', 'pdf'}
+
+# Color palette for alignments
+COLORS = [
+    '#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF',
+    '#FFD4E5', '#FFF5BA', '#C9BAFF', '#FFBAF3', '#BAF3FF',
+    '#FFE5BA', '#E5BAFF', '#BAFFE5', '#FFB3E6', '#B3E6FF',
+    '#FFE6B3', '#E6B3FF', '#B3FFE6', '#FFB3D9', '#B3D9FF'
+]
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -47,29 +54,74 @@ def extract_text_from_file(file_data, filename):
     else:
         raise ValueError("Unsupported file format")
 
+def split_into_sections(text):
+    """Split document into sections based on common patterns."""
+    # Try to identify sections by numbered patterns
+    patterns = [
+        r'^(\d+\.[\d\.]*)\s+([^\n]+)',  # 1. or 1.1 style
+        r'^([A-Z][^\n]{0,100}):',        # TITLE: style
+        r'^(Article\s+\d+)',             # Article N style
+        r'^(Section\s+\d+)',             # Section N style
+    ]
+    
+    sections = []
+    lines = text.split('\n')
+    current_section = {'title': 'Introduction', 'content': '', 'start_line': 0}
+    
+    for i, line in enumerate(lines):
+        line = line.strip()
+        if not line:
+            current_section['content'] += '\n'
+            continue
+            
+        matched = False
+        for pattern in patterns:
+            match = re.match(pattern, line, re.MULTILINE)
+            if match:
+                # Save previous section
+                if current_section['content'].strip():
+                    current_section['end_line'] = i
+                    sections.append(current_section)
+                
+                # Start new section
+                current_section = {
+                    'title': line[:100],
+                    'content': line + '\n',
+                    'start_line': i
+                }
+                matched = True
+                break
+        
+        if not matched:
+            current_section['content'] += line + '\n'
+    
+    # Add last section
+    if current_section['content'].strip():
+        current_section['end_line'] = len(lines)
+        sections.append(current_section)
+    
+    return sections
+
 @app.route('/')
 def index():
     """Render the main page."""
-    return render_template('index.html')
+    return render_template('index_better.html')
 
 @app.route('/align', methods=['POST'])
 def align_documents():
-    """Handle document alignment request."""
+    """Handle document alignment request with improved visualization."""
     try:
         print(f"\n{'='*80}")
-        print(f"🚀 NEW ALIGNMENT REQUEST")
+        print(f"🚀 NEW ALIGNMENT REQUEST (BETTER VERSION)")
         print(f"{'='*80}")
         
         # Get API key from environment
         api_key = os.getenv('OPENAI_API_KEY')
         if not api_key:
-            print("❌ ERROR: OpenAI API key not configured!")
             return jsonify({'error': 'OpenAI API key not configured'}), 500
-        print(f"✅ API key found: {api_key[:10]}...")
         
         # Check if files were uploaded
         if 'doc1' not in request.files or 'doc2' not in request.files:
-            print("❌ ERROR: Missing document files!")
             return jsonify({'error': 'Both documents are required'}), 400
         
         doc1 = request.files['doc1']
@@ -81,67 +133,66 @@ def align_documents():
         print(f"🎯 Method: {method}")
         
         # Validate files
-        if doc1.filename == '' or doc2.filename == '':
-            print("❌ ERROR: Empty filename!")
-            return jsonify({'error': 'Both documents must be selected'}), 400
-        
         if not (allowed_file(doc1.filename) and allowed_file(doc2.filename)):
-            print("❌ ERROR: Invalid file type!")
             return jsonify({'error': 'Only TXT and PDF files are allowed'}), 400
         
         # Extract text from files
-        print(f"📄 Extracting text from files...")
         doc1_text = extract_text_from_file(doc1.read(), doc1.filename)
         doc2_text = extract_text_from_file(doc2.read(), doc2.filename)
-        print(f"✅ Doc1 text: {len(doc1_text)} chars")
-        print(f"✅ Doc2 text: {len(doc2_text)} chars")
+        print(f"✅ Doc1: {len(doc1_text)} chars")
+        print(f"✅ Doc2: {len(doc2_text)} chars")
+        
+        # Split documents into sections
+        doc1_sections = split_into_sections(doc1_text)
+        doc2_sections = split_into_sections(doc2_text)
+        print(f"✅ Doc1: {len(doc1_sections)} sections")
+        print(f"✅ Doc2: {len(doc2_sections)} sections")
         
         # Perform alignment based on selected method
         if method == 'section':
-            result = section_based_alignment(api_key, doc1_text, doc2_text)
+            result = section_based_alignment(api_key, doc1_text, doc2_text, doc1_sections, doc2_sections)
         elif method == 'topic_template':
-            result = topic_template_alignment(api_key, doc1_text, doc2_text)
+            result = topic_template_alignment(api_key, doc1_text, doc2_text, doc1_sections, doc2_sections)
         elif method == 'topic_direct':
-            result = topic_direct_alignment(api_key, doc1_text, doc2_text)
+            result = topic_direct_alignment(api_key, doc1_text, doc2_text, doc1_sections, doc2_sections)
         else:
-            print(f"❌ ERROR: Invalid method: {method}")
             return jsonify({'error': 'Invalid alignment method'}), 400
         
-        print(f"\n✅ ALIGNMENT COMPLETE: {result.get('alignments_found', 0)} alignments found")
+        # Add full documents and sections for visualization
+        result['doc1_text'] = doc1_text
+        result['doc2_text'] = doc2_text
+        result['doc1_sections'] = doc1_sections
+        result['doc2_sections'] = doc2_sections
+        result['doc1_name'] = doc1.filename
+        result['doc2_name'] = doc2.filename
+        
+        print(f"✅ COMPLETE: {result.get('alignments_found', 0)} alignments")
         return jsonify(result)
     
     except Exception as e:
-        print(f"\n❌ FATAL ERROR: {e}")
+        print(f"❌ ERROR: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
-def section_based_alignment(api_key, doc1_text, doc2_text):
-    """Perform section-based alignment by passing full docs to LLM."""
+def section_based_alignment(api_key, doc1_text, doc2_text, doc1_sections, doc2_sections):
+    """Perform section-based alignment with color mapping."""
     print(f"\n{'='*80}")
-    print(f"📋 SECTION-BASED ALIGNMENT (FULL DOCUMENT)")
+    print(f"📋 SECTION-BASED ALIGNMENT")
     print(f"{'='*80}")
     import openai
     
-    # Initialize client with explicit settings to avoid proxy issues
+    # Initialize client
     try:
         client = openai.OpenAI(api_key=api_key)
     except TypeError as e:
-        # Fallback for older versions or proxy issues
-        print(f"⚠️ Client init warning: {e}, trying alternative...")
         import httpx
-        client = openai.OpenAI(
-            api_key=api_key,
-            http_client=httpx.Client()
-        )
+        client = openai.OpenAI(api_key=api_key, http_client=httpx.Client())
     
     # Truncate if too long
     max_len = 12000
-    doc1_preview = doc1_text[:max_len] if len(doc1_text) > max_len else doc1_text
-    doc2_preview = doc2_text[:max_len] if len(doc2_text) > max_len else doc2_text
-    
-    print(f"📄 Doc1: {len(doc1_text)} chars (using {len(doc1_preview)})")
-    print(f"📄 Doc2: {len(doc2_text)} chars (using {len(doc2_preview)})")
+    doc1_preview = doc1_text[:max_len]
+    doc2_preview = doc2_text[:max_len]
     
     prompt = f"""Compare these two documents and identify aligned sections/topics.
 
@@ -151,18 +202,19 @@ DOCUMENT 1:
 DOCUMENT 2:
 {doc2_preview}
 
-Analyze both documents and create alignments. Return a JSON array where each object has:
-- "doc1_section": section identifier from doc1 (e.g., "Section 1", "Clause 2")
+Analyze both documents and create alignments. For each alignment, specify which section titles or numbers are being matched.
+
+Return a JSON array where each object has:
+- "doc1_section": section identifier from doc1 (e.g., "1. Definition" or "Introduction")
 - "doc2_section": section identifier from doc2
-- "doc1_title": topic/title from doc1
-- "doc2_title": topic/title from doc2
+- "topic": the common topic/subject
 - "confidence": "high", "medium", or "low"
 - "differences": key differences between these sections (string)
 
 Return ONLY the JSON array, nothing else."""
 
     try:
-        print(f"🤖 Calling OpenAI for alignment...")
+        print(f"🤖 Calling OpenAI...")
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[{"role": "user", "content": prompt}],
@@ -171,7 +223,6 @@ Return ONLY the JSON array, nothing else."""
         )
         
         json_str = response.choices[0].message.content.strip()
-        print(f"✅ Received response")
         
         # Clean JSON
         if "```json" in json_str:
@@ -181,8 +232,13 @@ Return ONLY the JSON array, nothing else."""
         elif json_str.startswith("```"):
             json_str = json_str[3:-3].strip()
         
-        import json
         alignments = json.loads(json_str)
+        
+        # Add colors and section mappings
+        for i, alignment in enumerate(alignments):
+            alignment['color'] = COLORS[i % len(COLORS)]
+            alignment['id'] = i
+        
         print(f"✅ Found {len(alignments)} alignments")
         
         return {
@@ -201,37 +257,24 @@ Return ONLY the JSON array, nothing else."""
             'error': str(e)
         }
 
-def topic_template_alignment(api_key, doc1_text, doc2_text):
-    """Topic-based alignment using standard legal topics as a template."""
+def topic_template_alignment(api_key, doc1_text, doc2_text, doc1_sections, doc2_sections):
+    """Topic-based alignment using standard legal topics."""
     print(f"\n{'='*80}")
-    print(f"🏷️  TOPIC-TEMPLATE ALIGNMENT (TOPIC → SECTIONS)")
+    print(f"🏷️  TOPIC-TEMPLATE ALIGNMENT")
     print(f"{'='*80}")
     import openai
-    import json
     
-    # Initialize client with explicit settings to avoid proxy issues
     try:
         client = openai.OpenAI(api_key=api_key)
-    except TypeError as e:
-        # Fallback for older versions or proxy issues
-        print(f"⚠️ Client init warning: {e}, trying alternative...")
+    except TypeError:
         import httpx
-        client = openai.OpenAI(
-            api_key=api_key,
-            http_client=httpx.Client()
-        )
+        client = openai.OpenAI(api_key=api_key, http_client=httpx.Client())
     
-    # Truncate if needed
     max_len = 12000
     doc1 = doc1_text[:max_len]
     doc2 = doc2_text[:max_len]
     
-    print(f"📄 Doc1: {len(doc1_text)} chars (using {len(doc1)})")
-    print(f"📄 Doc2: {len(doc2_text)} chars (using {len(doc2)})")
-    
-    # First, identify document type and get standard topics
-    print(f"🔍 Step 1: Identifying document type...")
-    
+    # Identify document type
     type_prompt = f"""What type of legal document is this? Return one word (e.g., NDA, Contract, License, Agreement, etc.)
 
 Document:
@@ -249,11 +292,11 @@ Return ONLY the document type, nothing else."""
         doc_type = type_response.choices[0].message.content.strip().replace('.', '')
         print(f"✅ Document type: {doc_type}")
     except Exception as e:
-        print(f"⚠️ Could not identify type, using 'Legal Document': {e}")
+        print(f"⚠️ Could not identify type: {e}")
         doc_type = "Legal Document"
     
-    # Now get standard topics for this document type and map sections
-    prompt = f"""This is a {doc_type}. Identify the standard topics that typically appear in such documents, then map which sections from each document cover each topic.
+    # Get standard topics and map sections
+    prompt = f"""This is a {doc_type}. Identify standard topics and map sections from each document.
 
 DOCUMENT 1:
 {doc1}
@@ -261,28 +304,20 @@ DOCUMENT 1:
 DOCUMENT 2:
 {doc2}
 
-For a {doc_type}, identify 8-12 standard legal topics, then show which sections cover each topic.
-
 Return a JSON array where each object represents ONE topic:
 {{
-  "topic_name": "Standard topic name for this type of document",
-  "topic_description": "What this topic typically covers in a {doc_type}",
+  "topic_name": "Standard topic name",
   "doc1_sections": ["Section X: Title", ...] or [] if not present,
   "doc2_sections": ["Section Y: Title", ...] or [] if not present,
-  "doc1_summary": "How doc1 addresses this topic" or "",
-  "doc2_summary": "How doc2 addresses this topic" or "",
-  "key_differences": "Main differences between the two documents for this topic",
-  "is_standard": true if this is a typical topic for a {doc_type}, false if unique
+  "doc1_summary": "How doc1 addresses this topic",
+  "doc2_summary": "How doc2 addresses this topic",
+  "differences": "Main differences",
+  "is_standard": true/false
 }}
 
-IMPORTANT:
-- Use standard topics common to {doc_type}s (e.g., for NDAs: Confidential Info Definition, Disclosure Restrictions, Return Obligations, etc.)
-- Include all standard topics even if only in one document
-- Use actual section numbers from the documents
-- Return ONLY the JSON array."""
+Return ONLY the JSON array."""
 
     try:
-        print(f"🤖 Step 2: Mapping standard topics to sections...")
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[{"role": "user", "content": prompt}],
@@ -291,7 +326,6 @@ IMPORTANT:
         )
         
         raw = response.choices[0].message.content.strip()
-        print(f"✅ Got response: {len(raw)} chars")
         
         # Clean JSON
         if "```json" in raw:
@@ -301,118 +335,51 @@ IMPORTANT:
         elif raw.startswith("```"):
             raw = raw[3:-3].strip()
         
-        # Parse
         topics = json.loads(raw)
-        print(f"✅ Parsed {len(topics)} standard topics")
         
-        # Format results
-        alignments = []
-        standard_count = 0
+        # Add colors
         for i, topic in enumerate(topics):
-            # Get all fields with defaults
-            topic_name = str(topic.get('topic_name') or f'Topic {i+1}')
-            topic_desc = str(topic.get('topic_description') or '')
-            doc1_secs = topic.get('doc1_sections') or []
-            doc2_secs = topic.get('doc2_sections') or []
-            doc1_summary = str(topic.get('doc1_summary') or '')
-            doc2_summary = str(topic.get('doc2_summary') or '')
-            differences = str(topic.get('key_differences') or '')
-            is_standard = topic.get('is_standard', True)
-            
-            if is_standard:
-                standard_count += 1
-            
-            # Ensure sections are lists of strings
-            if not isinstance(doc1_secs, list):
-                doc1_secs = [str(doc1_secs)]
-            doc1_secs = [str(s) for s in doc1_secs]
-            
-            if not isinstance(doc2_secs, list):
-                doc2_secs = [str(doc2_secs)]
-            doc2_secs = [str(s) for s in doc2_secs]
-            
-            # Determine presence and similarity
-            in_doc1 = len(doc1_secs) > 0
-            in_doc2 = len(doc2_secs) > 0
-            
-            if in_doc1 and in_doc2:
-                similarity = 'high'
-            elif in_doc1 or in_doc2:
-                similarity = 'low'
-            else:
-                similarity = 'none'
-            
-            alignment = {
-                'topic_name': topic_name,
-                'topic_description': topic_desc,
-                'doc1_sections': doc1_secs,
-                'doc2_sections': doc2_secs,
-                'doc1_summary': doc1_summary,
-                'doc2_summary': doc2_summary,
-                'similarity': similarity,
-                'differences': differences,
-                'in_doc1': in_doc1,
-                'in_doc2': in_doc2,
-                'is_standard': is_standard
-            }
-            
-            alignments.append(alignment)
-            
-            marker = '⭐' if is_standard else '  '
-            print(f"  {marker} {i+1}. {topic_name}")
-            print(f"      Doc1: {len(doc1_secs)} sections | Doc2: {len(doc2_secs)} sections")
+            topic['color'] = COLORS[i % len(COLORS)]
+            topic['id'] = i
         
-        print(f"✅ SUCCESS: {len(alignments)} topics ({standard_count} standard)")
+        print(f"✅ Found {len(topics)} topics")
+        
         return {
-            'method': 'Topic-Based Alignment (With Template)',
+            'method': 'Topic-Based Alignment (Template)',
             'document_type': doc_type,
-            'standard_topics': standard_count,
-            'alignments_found': len(alignments),
-            'alignments': alignments
+            'alignments_found': len(topics),
+            'alignments': topics
         }
-        
     except Exception as e:
-        print(f"❌ FATAL ERROR: {e}")
+        print(f"❌ ERROR: {e}")
         import traceback
         traceback.print_exc()
         return {
-            'method': 'Topic-Based Alignment (With Template)',
+            'method': 'Topic-Based Alignment (Template)',
             'document_type': doc_type,
-            'standard_topics': 0,
             'alignments_found': 0,
             'alignments': [],
             'error': str(e)
         }
 
-def topic_direct_alignment(api_key, doc1_text, doc2_text):
-    """Topic-based alignment by identifying which sections belong to each topic."""
+def topic_direct_alignment(api_key, doc1_text, doc2_text, doc1_sections, doc2_sections):
+    """Topic-based alignment by identifying topics and mapping sections."""
     print(f"\n{'='*80}")
-    print(f"🎯 TOPIC-DIRECT (TOPIC → SECTIONS MAPPING)")
+    print(f"🎯 TOPIC-DIRECT ALIGNMENT")
     print(f"{'='*80}")
     import openai
-    import json
     
-    # Initialize client with explicit settings to avoid proxy issues
     try:
         client = openai.OpenAI(api_key=api_key)
-    except TypeError as e:
-        # Fallback for older versions or proxy issues
-        print(f"⚠️ Client init warning: {e}, trying alternative...")
+    except TypeError:
         import httpx
-        client = openai.OpenAI(
-            api_key=api_key,
-            http_client=httpx.Client()
-        )
+        client = openai.OpenAI(api_key=api_key, http_client=httpx.Client())
     
-    # Truncate if needed
     max_len = 12000
     doc1 = doc1_text[:max_len]
     doc2 = doc2_text[:max_len]
     
-    print(f"📄 Doc1: {len(doc1_text)} chars (using {len(doc1)})")
-    print(f"📄 Doc2: {len(doc2_text)} chars (using {len(doc2)})")
-    
-    prompt = f"""Analyze these two legal documents and identify 6-10 main topics that appear across both documents.
+    prompt = f"""Analyze these two documents and identify 6-10 main topics.
 
 DOCUMENT 1:
 {doc1}
@@ -420,27 +387,21 @@ DOCUMENT 1:
 DOCUMENT 2:
 {doc2}
 
-For each main topic, identify which sections/clauses from each document relate to that topic.
+For each topic, identify which sections from each document relate to it.
 
 Return a JSON array where each object represents ONE topic:
 {{
-  "topic_name": "Name of the topic (e.g., 'Confidentiality Obligations')",
-  "topic_description": "Brief description of what this topic covers",
-  "doc1_sections": ["Section 1: Title", "Section 2: Title", ...] or [] if not present,
-  "doc2_sections": ["Section 1: Title", "Section 2: Title", ...] or [] if not present,
-  "doc1_content_summary": "Summary of how doc1 handles this topic" or "",
-  "doc2_content_summary": "Summary of how doc2 handles this topic" or "",
-  "key_differences": "Main differences in how each document addresses this topic"
+  "topic_name": "Name of the topic",
+  "doc1_sections": ["Section X: Title", ...] or [],
+  "doc2_sections": ["Section Y: Title", ...] or [],
+  "doc1_summary": "Summary of how doc1 handles this",
+  "doc2_summary": "Summary of how doc2 handles this",
+  "differences": "Key differences"
 }}
 
-IMPORTANT: 
-- Identify topics that appear in BOTH documents (high priority)
-- Also include topics unique to one document (mark with empty [] for the other)
-- Use actual section numbers/identifiers from the documents
-- Return ONLY the JSON array, nothing else."""
+Return ONLY the JSON array."""
 
     try:
-        print(f"🤖 Calling GPT-4o to identify topics and map sections...")
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[{"role": "user", "content": prompt}],
@@ -449,8 +410,6 @@ IMPORTANT:
         )
         
         raw = response.choices[0].message.content.strip()
-        print(f"✅ Got response: {len(raw)} chars")
-        print(f"📝 First 300 chars: {raw[:300]}")
         
         # Clean JSON
         if "```json" in raw:
@@ -460,79 +419,42 @@ IMPORTANT:
         elif raw.startswith("```"):
             raw = raw[3:-3].strip()
         
-        # Parse
         topics = json.loads(raw)
-        print(f"✅ Parsed {len(topics)} topics")
         
-        # Format results with guaranteed fields
-        alignments = []
+        # Add colors
         for i, topic in enumerate(topics):
-            # Get all fields with defaults
-            topic_name = str(topic.get('topic_name') or f'Topic {i+1}')
-            topic_desc = str(topic.get('topic_description') or '')
-            doc1_secs = topic.get('doc1_sections') or []
-            doc2_secs = topic.get('doc2_sections') or []
-            doc1_summary = str(topic.get('doc1_content_summary') or '')
-            doc2_summary = str(topic.get('doc2_content_summary') or '')
-            differences = str(topic.get('key_differences') or '')
-            
-            # Ensure sections are lists of strings
-            if not isinstance(doc1_secs, list):
-                doc1_secs = [str(doc1_secs)]
-            doc1_secs = [str(s) for s in doc1_secs]
-            
-            if not isinstance(doc2_secs, list):
-                doc2_secs = [str(doc2_secs)]
-            doc2_secs = [str(s) for s in doc2_secs]
-            
-            # Determine presence
-            in_doc1 = len(doc1_secs) > 0
-            in_doc2 = len(doc2_secs) > 0
-            
-            if in_doc1 and in_doc2:
-                similarity = 'high'
-            elif in_doc1 or in_doc2:
-                similarity = 'low'
-            else:
-                similarity = 'none'
-            
-            alignment = {
-                'topic_name': topic_name,
-                'topic_description': topic_desc,
-                'doc1_sections': doc1_secs,
-                'doc2_sections': doc2_secs,
-                'doc1_summary': doc1_summary,
-                'doc2_summary': doc2_summary,
-                'similarity': similarity,
-                'differences': differences,
-                'in_doc1': in_doc1,
-                'in_doc2': in_doc2
-            }
-            
-            alignments.append(alignment)
-            
-            print(f"  {i+1}. {topic_name}")
-            print(f"      Doc1: {len(doc1_secs)} sections | Doc2: {len(doc2_secs)} sections")
+            topic['color'] = COLORS[i % len(COLORS)]
+            topic['id'] = i
         
-        print(f"✅ SUCCESS: {len(alignments)} topics formatted")
+        print(f"✅ Found {len(topics)} topics")
+        
         return {
-            'method': 'Direct Topic-Based Alignment (Topic → Sections)',
-            'alignments_found': len(alignments),
-            'alignments': alignments
+            'method': 'Direct Topic-Based Alignment',
+            'alignments_found': len(topics),
+            'alignments': topics
         }
-        
     except Exception as e:
-        print(f"❌ FATAL ERROR: {e}")
+        print(f"❌ ERROR: {e}")
         import traceback
         traceback.print_exc()
         return {
-            'method': 'Direct Topic-Based Alignment (Topic → Sections)',
+            'method': 'Direct Topic-Based Alignment',
             'alignments_found': 0,
             'alignments': [],
             'error': str(e)
         }
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5071))
-    # Disable reloader to avoid watchdog compatibility issues
+    port = int(os.getenv('PORT', 5071))
+    print(f"""
+╔════════════════════════════════════════════════════════════╗
+║     Legal Document Alignment Tool (IMPROVED VERSION)      ║
+║                                                            ║
+║  Features: Side-by-side view with color-coded alignment   ║
+║  Server: http://0.0.0.0:{port}                           ║
+╚════════════════════════════════════════════════════════════╝
+""")
     app.run(host='0.0.0.0', port=port, debug=True, use_reloader=False)
+
+
+

@@ -3,7 +3,7 @@ services:
     name: legal-doc-alignment
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app_better:app
+    startCommand: gunicorn app:app
     envVars:
       - key: OPENAI_API_KEY
         sync: false
