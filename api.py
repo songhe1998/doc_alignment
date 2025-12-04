@@ -12,6 +12,11 @@ import openai
 import PyPDF2
 from io import BytesIO
 import base64
+from topic_services import (
+    run_topic_template_alignment,
+    run_topic_direct_alignment,
+)
+from openai_helper import create_openai_client
 
 # Load environment variables
 load_dotenv()
@@ -44,13 +49,9 @@ def extract_text_from_base64(base64_data, filename):
 
 def section_based_alignment(api_key, doc1_text, doc2_text):
     """Perform section-based alignment."""
-    import openai
     
-    try:
-        client = openai.OpenAI(api_key=api_key)
-    except TypeError:
-        import httpx
-        client = openai.OpenAI(api_key=api_key, http_client=httpx.Client())
+    # Initialize client with proper configuration
+    client = create_openai_client(api_key)
     
     max_len = 12000
     doc1_preview = doc1_text[:max_len]
@@ -76,10 +77,10 @@ Return ONLY the JSON array, nothing else."""
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4o",  # GPT-4 Omni - most capable model
             messages=[{"role": "user", "content": prompt}],
             max_tokens=3000,
-            temperature=0.3
+            temperature=0  # More deterministic for consistent results
         )
         
         json_str = response.choices[0].message.content.strip()
@@ -108,158 +109,43 @@ Return ONLY the JSON array, nothing else."""
             'alignments': []
         }
 
+def _assign_alignment_metadata(alignments):
+    for i, alignment in enumerate(alignments):
+        alignment.setdefault('id', i)
+    return alignments
+
+
 def topic_template_alignment(api_key, doc1_text, doc2_text):
     """Topic-based alignment using standard legal topics."""
-    import openai
-    
     try:
-        client = openai.OpenAI(api_key=api_key)
-    except TypeError:
-        import httpx
-        client = openai.OpenAI(api_key=api_key, http_client=httpx.Client())
-    
-    max_len = 12000
-    doc1 = doc1_text[:max_len]
-    doc2 = doc2_text[:max_len]
-    
-    # Identify document type
-    type_prompt = f"""What type of legal document is this? Return one word (e.g., NDA, Contract, License, Agreement, etc.)
-
-Document:
-{doc1[:2000]}
-
-Return ONLY the document type, nothing else."""
-
-    try:
-        type_response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": type_prompt}],
-            max_tokens=50,
-            temperature=0.3
-        )
-        doc_type = type_response.choices[0].message.content.strip().replace('.', '')
-    except Exception:
-        doc_type = "Legal Document"
-    
-    prompt = f"""This is a {doc_type}. Identify standard topics and map sections from each document.
-
-DOCUMENT 1:
-{doc1}
-
-DOCUMENT 2:
-{doc2}
-
-Return a JSON array where each object represents ONE topic:
-{{
-  "topic_name": "Standard topic name",
-  "doc1_sections": ["Section X: Title", ...] or [] if not present,
-  "doc2_sections": ["Section Y: Title", ...] or [] if not present,
-  "doc1_summary": "How doc1 addresses this topic",
-  "doc2_summary": "How doc2 addresses this topic",
-  "differences": "Main differences",
-  "is_standard": true/false
-}}
-
-Return ONLY the JSON array."""
-
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=4000,
-            temperature=0.3
-        )
-        
-        raw = response.choices[0].message.content.strip()
-        
-        if "```json" in raw:
-            start = raw.find("```json") + 7
-            end = raw.find("```", start)
-            raw = raw[start:end].strip()
-        elif raw.startswith("```"):
-            raw = raw[3:-3].strip()
-        
-        topics = json.loads(raw)
-        
-        return {
-            'method': 'topic_template',
-            'success': True,
-            'document_type': doc_type,
-            'alignments_found': len(topics),
-            'alignments': topics
-        }
+        result = run_topic_template_alignment(api_key, doc1_text, doc2_text)
+        result['method'] = 'topic_template'
+        result['success'] = True
+        result['alignments'] = _assign_alignment_metadata(result.get('alignments', []))
+        return result
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return {
             'method': 'topic_template',
             'success': False,
             'error': str(e),
-            'document_type': doc_type,
             'alignments_found': 0,
             'alignments': []
         }
+
 
 def topic_direct_alignment(api_key, doc1_text, doc2_text):
     """Topic-based alignment by directly extracting topics."""
-    import openai
-    
     try:
-        client = openai.OpenAI(api_key=api_key)
-    except TypeError:
-        import httpx
-        client = openai.OpenAI(api_key=api_key, http_client=httpx.Client())
-    
-    max_len = 12000
-    doc1 = doc1_text[:max_len]
-    doc2 = doc2_text[:max_len]
-    
-    prompt = f"""Analyze these two documents and identify 6-10 main topics.
-
-DOCUMENT 1:
-{doc1}
-
-DOCUMENT 2:
-{doc2}
-
-For each topic, identify which sections from each document relate to it.
-
-Return a JSON array where each object represents ONE topic:
-{{
-  "topic_name": "Name of the topic",
-  "doc1_sections": ["Section X: Title", ...] or [],
-  "doc2_sections": ["Section Y: Title", ...] or [],
-  "doc1_summary": "Summary of how doc1 handles this",
-  "doc2_summary": "Summary of how doc2 handles this",
-  "differences": "Key differences"
-}}
-
-Return ONLY the JSON array."""
-
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=4000,
-            temperature=0.3
-        )
-        
-        raw = response.choices[0].message.content.strip()
-        
-        if "```json" in raw:
-            start = raw.find("```json") + 7
-            end = raw.find("```", start)
-            raw = raw[start:end].strip()
-        elif raw.startswith("```"):
-            raw = raw[3:-3].strip()
-        
-        topics = json.loads(raw)
-        
-        return {
-            'method': 'topic_direct',
-            'success': True,
-            'alignments_found': len(topics),
-            'alignments': topics
-        }
+        result = run_topic_direct_alignment(api_key, doc1_text, doc2_text)
+        result['method'] = 'topic_direct'
+        result['success'] = True
+        result['alignments'] = _assign_alignment_metadata(result.get('alignments', []))
+        return result
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return {
             'method': 'topic_direct',
             'success': False,
@@ -267,6 +153,7 @@ Return ONLY the JSON array."""
             'alignments_found': 0,
             'alignments': []
         }
+
 
 # ============================================================================
 # API ENDPOINTS
@@ -480,4 +367,3 @@ if __name__ == '__main__':
 ╚════════════════════════════════════════════════════════════╝
 """)
     app.run(host='0.0.0.0', port=port, debug=True, use_reloader=False)
-

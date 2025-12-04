@@ -140,18 +140,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function displaySectionBasedDocuments(doc1Content, doc2Content, data) {
         console.log('🔧 displaySectionBasedDocuments called');
         // Show full documents with highlighting
-        let doc1Text = data.doc1_text || '';
-        let doc2Text = data.doc2_text || '';
+        const doc1Text = data.doc1_text || '';
+        const doc2Text = data.doc2_text || '';
+        const doc1Lookup = buildSectionLookup(data.doc1_sections || []);
+        const doc2Lookup = buildSectionLookup(data.doc2_sections || []);
         
-        console.log('Raw doc1 length:', doc1Text.length);
-        console.log('Raw doc2 length:', doc2Text.length);
-        console.log('Doc1 preview:', doc1Text.substring(0, 200));
-        
-        // Convert to HTML-safe
-        doc1Text = doc1Text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        doc2Text = doc2Text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        
-        console.log('After HTML-safe doc1 length:', doc1Text.length);
+        console.log('Doc1 text length:', doc1Text.length);
         
         // Create arrays to hold highlighted ranges
         let doc1Highlights = [];
@@ -168,35 +162,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const doc1Title = alignment.doc1_title || '';
             
             if (doc1Section || doc1Title) {
-                // Try to find the section in the text
-                let searchText = doc1Section + (doc1Title ? ' ' + doc1Title : '');
-                searchText = searchText.substring(0, 150).trim();
-                
-                if (searchText) {
-                    // Find all occurrences (there should usually be just one)
-                    let pos = doc1Text.toLowerCase().indexOf(searchText.toLowerCase());
-                    
-                    if (pos !== -1) {
-                        // Try to capture the whole section (up to next section or a reasonable length)
-                        let endPos = pos + searchText.length;
-                        
-                        // Try to find where the section ends (next numbered section or end)
-                        let nextSectionMatch = doc1Text.substring(endPos).match(/\n\s*\d+\./);
-                        if (nextSectionMatch) {
-                            endPos = endPos + nextSectionMatch.index;
-                        } else {
-                            // Take next ~500 characters
-                            endPos = Math.min(endPos + 500, doc1Text.length);
-                        }
-                        
-                        doc1Highlights.push({
-                            start: pos,
-                            end: endPos,
-                            color: color,
-                            id: id,
-                            name: topicName
-                        });
-                    }
+                const lookupLabel = `${doc1Section || ''} ${doc1Title || ''}`.trim();
+                const matchedSection = findSectionMatch(lookupLabel, doc1Lookup);
+                if (matchedSection && matchedSection.start_char !== undefined && matchedSection.end_char) {
+                    doc1Highlights.push({
+                        start: matchedSection.start_char,
+                        end: matchedSection.end_char,
+                        color,
+                        id,
+                        name: topicName
+                    });
+                } else {
+                    const fallback = lookupLabel.substring(0, 150).trim();
+                    addFallbackHighlight(fallback, doc1Text, doc1Highlights, color, id, topicName);
                 }
             }
             
@@ -205,46 +183,30 @@ document.addEventListener('DOMContentLoaded', function() {
             const doc2Title = alignment.doc2_title || '';
             
             if (doc2Section || doc2Title) {
-                let searchText = doc2Section + (doc2Title ? ' ' + doc2Title : '');
-                searchText = searchText.substring(0, 150).trim();
-                
-                if (searchText) {
-                    let pos = doc2Text.toLowerCase().indexOf(searchText.toLowerCase());
-                    
-                    if (pos !== -1) {
-                        let endPos = pos + searchText.length;
-                        
-                        let nextSectionMatch = doc2Text.substring(endPos).match(/\n\s*\d+\./);
-                        if (nextSectionMatch) {
-                            endPos = endPos + nextSectionMatch.index;
-                        } else {
-                            endPos = Math.min(endPos + 500, doc2Text.length);
-                        }
-                        
-                        doc2Highlights.push({
-                            start: pos,
-                            end: endPos,
-                            color: color,
-                            id: id,
-                            name: topicName
-                        });
-                    }
+                const lookupLabel = `${doc2Section || ''} ${doc2Title || ''}`.trim();
+                const matchedSection = findSectionMatch(lookupLabel, doc2Lookup);
+                if (matchedSection && matchedSection.start_char !== undefined && matchedSection.end_char) {
+                    doc2Highlights.push({
+                        start: matchedSection.start_char,
+                        end: matchedSection.end_char,
+                        color,
+                        id,
+                        name: topicName
+                    });
+                } else {
+                    const fallback = lookupLabel.substring(0, 150).trim();
+                    addFallbackHighlight(fallback, doc2Text, doc2Highlights, color, id, topicName);
                 }
             }
         });
         
         // Apply highlights
-        const doc1Html = applyHighlights(doc1Text, doc1Highlights);
-        const doc2Html = applyHighlights(doc2Text, doc2Highlights);
+        renderDocumentWithHighlights(doc1Text, doc1Highlights, doc1Content);
+        renderDocumentWithHighlights(doc2Text, doc2Highlights, doc2Content);
         
         console.log('Doc1 highlights found:', doc1Highlights.length);
         console.log('Doc2 highlights found:', doc2Highlights.length);
-        console.log('Doc1 HTML length:', doc1Html.length);
-        console.log('Doc2 HTML length:', doc2Html.length);
-        console.log('Doc1 HTML preview:', doc1Html.substring(0, 300));
-        
-        doc1Content.innerHTML = doc1Html;
-        doc2Content.innerHTML = doc2Html;
+        console.log('Doc1 HTML preview:', doc1Text.substring(0, 300));
         
         console.log('✅ Section-based documents rendered');
         
@@ -255,19 +217,18 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayTopicBasedDocuments(doc1Content, doc2Content, data) {
         console.log('🔧 displayTopicBasedDocuments called');
         // Show full documents with overlaid highlighting annotations
-        let doc1Text = data.doc1_text || '';
-        let doc2Text = data.doc2_text || '';
-        
-        console.log('Topic-based doc1 length:', doc1Text.length);
-        console.log('Topic-based doc2 length:', doc2Text.length);
-        
-        // Convert text to HTML-safe format
-        doc1Text = doc1Text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        doc2Text = doc2Text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const doc1Text = data.doc1_text || '';
+        const doc2Text = data.doc2_text || '';
+        const doc1Lookup = buildSectionLookup(data.doc1_sections || []);
+        const doc2Lookup = buildSectionLookup(data.doc2_sections || []);
         
         // Create arrays to hold highlighted ranges
         let doc1Highlights = [];
         let doc2Highlights = [];
+        
+        // Determine if this is topic_direct method (sections are key_points, not section IDs)
+        const isDirectMethod = data.method && data.method.includes('Direct');
+        console.log('Is Direct Method:', isDirectMethod);
         
         // For each alignment, try to find and mark sections in the text
         data.alignments.forEach((alignment, index) => {
@@ -278,88 +239,103 @@ document.addEventListener('DOMContentLoaded', function() {
             // Try to find sections in doc1
             if (alignment.doc1_sections && alignment.doc1_sections.length > 0) {
                 alignment.doc1_sections.forEach(section => {
-                    // Extract section number/title and search for it
-                    const searchText = section.substring(0, 100); // First 100 chars
-                    const pos = doc1Text.toLowerCase().indexOf(searchText.toLowerCase());
-                    if (pos !== -1) {
-                        doc1Highlights.push({
-                            start: pos,
-                            end: pos + searchText.length,
-                            color: color,
-                            id: id,
-                            name: topicName
-                        });
+                    if (isDirectMethod) {
+                        // For direct method, sections are key_points (descriptive text)
+                        // Use fuzzy matching to find this content in the document
+                        addFallbackHighlight(section.substring(0, 150), doc1Text, doc1Highlights, color, id, topicName);
+                    } else {
+                        // For template method, sections are section IDs like "9 Return of Materials"
+                        // First try to find by section ID in the lookup
+                        const matchedSection = findSectionMatch(section, doc1Lookup);
+                        if (matchedSection && matchedSection.start_char !== undefined && matchedSection.end_char) {
+                            doc1Highlights.push({
+                                start: matchedSection.start_char,
+                                end: matchedSection.end_char,
+                                color,
+                                id,
+                                name: topicName
+                            });
+                        } else {
+                            // Fallback: use fuzzy matching on the section text
+                            // The section text often contains the title, so search for that
+                            addFallbackHighlight(section.substring(0, 120), doc1Text, doc1Highlights, color, id, topicName);
+                        }
                     }
                 });
+            } else if (alignment.doc1_summary) {
+                // If no sections but we have a summary, use that for highlighting
+                addFallbackHighlight(alignment.doc1_summary.substring(0, 150), doc1Text, doc1Highlights, color, id, topicName);
             }
             
             // Try to find sections in doc2
             if (alignment.doc2_sections && alignment.doc2_sections.length > 0) {
                 alignment.doc2_sections.forEach(section => {
-                    const searchText = section.substring(0, 100);
-                    const pos = doc2Text.toLowerCase().indexOf(searchText.toLowerCase());
-                    if (pos !== -1) {
-                        doc2Highlights.push({
-                            start: pos,
-                            end: pos + searchText.length,
-                            color: color,
-                            id: id,
-                            name: topicName
-                        });
+                    if (isDirectMethod) {
+                        // For direct method, sections are key_points (descriptive text)
+                        // Use fuzzy matching to find this content in the document
+                        addFallbackHighlight(section.substring(0, 150), doc2Text, doc2Highlights, color, id, topicName);
+                    } else {
+                        // For template method, sections are section IDs like "6 The Recipient will..."
+                        // First try to find by section ID in the lookup
+                        const matchedSection = findSectionMatch(section, doc2Lookup);
+                        if (matchedSection && matchedSection.start_char !== undefined && matchedSection.end_char) {
+                            doc2Highlights.push({
+                                start: matchedSection.start_char,
+                                end: matchedSection.end_char,
+                                color,
+                                id,
+                                name: topicName
+                            });
+                        } else {
+                            // Fallback: use fuzzy matching on the section text
+                            addFallbackHighlight(section.substring(0, 120), doc2Text, doc2Highlights, color, id, topicName);
+                        }
                     }
                 });
+            } else if (alignment.doc2_summary) {
+                // If no sections but we have a summary, use that for highlighting
+                addFallbackHighlight(alignment.doc2_summary.substring(0, 150), doc2Text, doc2Highlights, color, id, topicName);
             }
         });
         
         // Apply highlights to doc1
-        const doc1Html = applyHighlights(doc1Text, doc1Highlights);
-        const doc2Html = applyHighlights(doc2Text, doc2Highlights);
-        
-        console.log('Topic doc1 highlights:', doc1Highlights.length);
-        console.log('Topic doc2 highlights:', doc2Highlights.length);
-        console.log('Topic doc1 HTML length:', doc1Html.length);
-        console.log('Topic doc1 HTML preview:', doc1Html.substring(0, 300));
-        
-        doc1Content.innerHTML = doc1Html;
-        doc2Content.innerHTML = doc2Html;
+        renderDocumentWithHighlights(doc1Text, doc1Highlights, doc1Content);
+        renderDocumentWithHighlights(doc2Text, doc2Highlights, doc2Content);
         
         console.log('✅ Topic-based documents rendered');
+        console.log('Doc1 highlights:', doc1Highlights.length);
+        console.log('Doc2 highlights:', doc2Highlights.length);
         
         // Add click handlers
         addHighlightClickHandlers();
     }
     
-    function applyHighlights(text, highlights) {
-        if (highlights.length === 0) {
-            return text;
-        }
-        
-        // Sort highlights by start position
-        highlights.sort((a, b) => a.start - b.start);
-        
-        // Build HTML with highlights
-        let html = '';
+    function renderDocumentWithHighlights(text, highlights, container) {
+        const frag = document.createDocumentFragment();
         let lastPos = 0;
+        const sorted = [...highlights].sort((a, b) => a.start - b.start);
         
-        highlights.forEach(highlight => {
-            // Add text before highlight
+        sorted.forEach(highlight => {
             if (highlight.start > lastPos) {
-                html += text.substring(lastPos, highlight.start);
+                frag.appendChild(document.createTextNode(text.slice(lastPos, highlight.start)));
             }
             
-            // Add highlighted text
-            const highlightedText = text.substring(highlight.start, highlight.end);
-            html += `<span class="highlight" data-alignment-id="${highlight.id}" style="background-color: ${highlight.color};" title="${highlight.name}">${highlightedText}</span>`;
-            
+            const span = document.createElement('span');
+            span.classList.add('highlight');
+            span.setAttribute('data-alignment-id', highlight.id);
+            span.style.backgroundColor = highlight.color;
+            span.title = highlight.name;
+            span.appendChild(document.createTextNode(text.slice(highlight.start, highlight.end)));
+            frag.appendChild(span);
             lastPos = highlight.end;
         });
         
-        // Add remaining text
         if (lastPos < text.length) {
-            html += text.substring(lastPos);
+            frag.appendChild(document.createTextNode(text.slice(lastPos)));
         }
         
-        return html;
+        container.innerHTML = '';
+        container.appendChild(frag);
     }
 
     function displayDetailedAlignments(data) {
@@ -482,8 +458,156 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     }
 
+    function normalizeLabel(text) {
+        return (text || '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, ' ')
+            .trim();
+    }
+
+    function buildSectionLookup(sections) {
+        return (sections || []).map(section => ({
+            ...section,
+            normalizedTitle: normalizeLabel(section.title),
+            normalizedId: normalizeLabel(section.section_id || section.title || '')
+        }));
+    }
+
+    function findSectionMatch(label, lookup) {
+        const normalizedLabel = normalizeLabel(label);
+        if (!normalizedLabel) {
+            return null;
+        }
+
+        let match = lookup.find(
+            section => section.normalizedId && section.normalizedId === normalizedLabel
+        );
+        if (match) {
+            return match;
+        }
+
+        match = lookup.find(
+            section => section.normalizedTitle && section.normalizedTitle === normalizedLabel
+        );
+        if (match) {
+            return match;
+        }
+
+        match = lookup.find(
+            section =>
+                section.normalizedTitle &&
+                (section.normalizedTitle.includes(normalizedLabel) ||
+                    normalizedLabel.includes(section.normalizedTitle))
+        );
+        if (match) {
+            return match;
+        }
+
+        const numberMatch = label ? label.match(/\d+(\.\d+)+/) : null;
+        if (numberMatch) {
+            const normalizedNumber = normalizeLabel(numberMatch[0]);
+            match = lookup.find(
+                section =>
+                    (section.normalizedId && section.normalizedId.includes(normalizedNumber)) ||
+                    (section.normalizedTitle && section.normalizedTitle.includes(normalizedNumber))
+            );
+            if (match) {
+                return match;
+            }
+        }
+
+        return null;
+    }
+
+    function addFallbackHighlight(searchText, documentText, highlights, color, id, name) {
+        if (!searchText) {
+            return;
+        }
+        
+        // First try exact match (fast path)
+        const normalizedDoc = documentText.toLowerCase();
+        const normalizedSearch = searchText.toLowerCase();
+        let pos = normalizedDoc.indexOf(normalizedSearch);
+        
+        if (pos !== -1) {
+            const length = Math.max(searchText.length, 120);
+            highlights.push({
+                start: pos,
+                end: Math.min(pos + length, documentText.length),
+                color,
+                id,
+                name
+            });
+            return;
+        }
+        
+        // If exact match fails, use fuzzy word-based matching
+        // Extract significant words (ignore common words)
+        const commonWords = new Set(['the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 
+                                     'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'should',
+                                     'can', 'could', 'may', 'might', 'must', 'shall', 'to', 'of', 'in', 
+                                     'for', 'on', 'with', 'at', 'by', 'from', 'as', 'or', 'and', 'but',
+                                     'not', 'no', 'any', 'all', 'each', 'this', 'that', 'these', 'those']);
+        
+        // Get significant words from search text (at least 3 chars, not common)
+        const searchWords = normalizedSearch
+            .replace(/[^a-z0-9\s]/g, ' ')
+            .split(/\s+/)
+            .filter(word => word.length >= 3 && !commonWords.has(word))
+            .slice(0, 8); // Use first 8 significant words
+        
+        if (searchWords.length < 2) {
+            return; // Not enough significant words for fuzzy matching
+        }
+        
+        // Find the best matching span in the document
+        // Split document into overlapping windows
+        const words = documentText.split(/\s+/);
+        const windowSize = Math.min(50, Math.max(15, searchWords.length * 3));
+        let bestMatch = null;
+        let bestScore = 0;
+        
+        for (let i = 0; i < words.length - 5; i++) {
+            const windowText = words.slice(i, i + windowSize).join(' ').toLowerCase();
+            
+            // Count how many search words appear in this window
+            let matchCount = 0;
+            for (const word of searchWords) {
+                if (windowText.includes(word)) {
+                    matchCount++;
+                }
+            }
+            
+            const score = matchCount / searchWords.length;
+            
+            // Need at least 50% of significant words to match
+            if (score > bestScore && score >= 0.5) {
+                bestScore = score;
+                
+                // Find the actual position in original text
+                const windowStart = documentText.toLowerCase().indexOf(windowText);
+                if (windowStart !== -1) {
+                    bestMatch = {
+                        start: windowStart,
+                        end: Math.min(windowStart + windowText.length, documentText.length),
+                        score: score
+                    };
+                }
+            }
+        }
+        
+        if (bestMatch) {
+            highlights.push({
+                start: bestMatch.start,
+                end: bestMatch.end,
+                color,
+                id,
+                name
+            });
+        }
+    }
+
     function escapeRegex(string) {
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 });
-

@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import time
 import os
 from dotenv import load_dotenv
+from openai_helper import create_openai_client
 
 @dataclass
 class DocumentTypeInfo:
@@ -55,7 +56,7 @@ class TopicBasedAligner:
         Args:
             api_key: OpenAI API key
         """
-        self.client = openai.OpenAI(api_key=api_key)
+        self.client = create_openai_client(api_key)
     
     def identify_document_type(self, document: str) -> DocumentTypeInfo:
         """
@@ -192,46 +193,77 @@ Return only the JSON array, no other text."""
         current_content = []
         
         for line in lines:
-            line = line.strip()
-            if not line:
+            stripped = line.strip()
+            if not stripped:
+                if current_section:
+                    current_content.append("")
                 continue
-                
-            # Check for main section headers (support mixed case too)
-            main_section_match = re.match(r'^\*\*(\d+)\.\s+(.+)\*\*$', line) or \
-                               re.match(r'^(\d+)\.\s+([A-Z][A-Za-z\s\-\/\(\)]+?)\.?$', line)
-            if main_section_match:
+            
+            # Try multiple patterns for section headers
+            # Pattern 1: **1. Title** (markdown bold)
+            match = re.match(r'^\*\*(\d+(?:\.\d+)*)\.\s+(.+?)\*\*$', stripped)
+            
+            # Pattern 2: 1. Title (with capital letter at start)
+            if not match:
+                match = re.match(r'^(\d+(?:\.\d+)*)\.\s+([A-Z][^\n]{2,100})\.?\s*$', stripped)
+            
+            # Pattern 3: More lenient - number. followed by text (handle embedded sections)
+            if not match:
+                # Look for section markers anywhere in the line
+                match = re.search(r'\b(\d+)\.\s+([A-Z][A-Za-z\s]{3,80})\s*\.?\s*(?:\s|$)', stripped)
+                if match:
+                    # Make sure it's actually a section header, not just a number in text
+                    section_num = match.group(1)
+                    title = match.group(2).strip()
+                    # Check if this looks like a section header
+                    if len(title) < 100 and not title.lower().startswith('the '):
+                        # Save previous section
+                        if current_section:
+                            sections[current_section] = (current_title, '\n'.join(current_content).strip())
+                        
+                        current_section = section_num
+                        current_title = title
+                        current_content = []
+                        continue
+            
+            # If we found a match with earlier patterns
+            if match:
+                # Save previous section
                 if current_section:
                     sections[current_section] = (current_title, '\n'.join(current_content).strip())
                 
-                current_section = main_section_match.group(1)
-                current_title = main_section_match.group(2).strip()
+                current_section = match.group(1)
+                current_title = match.group(2).strip()
                 current_content = []
                 continue
             
-            # Check for subsection headers
-            subsection_match = re.match(r'^(\d+\.\d+(?:\.\d+)*)\s+(.+)$', line)
-            if subsection_match and current_section:
-                if current_section:
-                    sections[current_section] = (current_title, '\n'.join(current_content).strip())
-                
-                current_section = subsection_match.group(1)
-                subsection_content = subsection_match.group(2).strip()
-                
-                title_match = re.match(r'[\*"]*([^"*:]+)[\*"]*[:]*\s*(.*)', subsection_content)
-                if title_match:
-                    current_title = title_match.group(1).strip()
-                    remaining_content = title_match.group(2).strip()
-                    current_content = [remaining_content] if remaining_content else []
-                else:
-                    current_title = subsection_content[:50] + "..." if len(subsection_content) > 50 else subsection_content
-                    current_content = []
-                continue
-            
+            # Not a header, add to current section content
             if current_section:
-                current_content.append(line)
+                current_content.append(stripped)
         
+        # Save the last section
         if current_section:
             sections[current_section] = (current_title, '\n'.join(current_content).strip())
+        
+        # If we didn't find any sections, create a fallback
+        if not sections:
+            # Try to extract any numbered items as sections
+            for i, line in enumerate(lines):
+                stripped = line.strip()
+                # Very lenient pattern - just look for numbers at start
+                match = re.match(r'^(\d+)\.\s+(.{5,100})', stripped)
+                if match:
+                    sec_num = match.group(1)
+                    title = match.group(2).strip()[:80]
+                    # Gather following lines as content
+                    content_lines = []
+                    for j in range(i+1, min(i+20, len(lines))):
+                        next_line = lines[j].strip()
+                        if next_line and not re.match(r'^\d+\.', next_line):
+                            content_lines.append(next_line)
+                        elif re.match(r'^\d+\.', next_line):
+                            break
+                    sections[sec_num] = (title, '\n'.join(content_lines).strip())
         
         return sections
     
