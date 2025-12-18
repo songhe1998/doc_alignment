@@ -54,20 +54,18 @@ Document:
 For each topic you identify, provide:
 - "topic_name": a clear name for the topic (e.g., "Confidential Information Definition", "Non-Disclosure Obligations")
 - "description": what this topic is about (1-2 sentences)
-- "key_points": array of 2-4 EXACT PHRASES copied verbatim from the document (do not paraphrase, copy the exact wording)
-- "relevant_content": an EXACT QUOTE from the document (copy 50-100 consecutive words exactly as they appear, including any typos or formatting)
-
-IMPORTANT: For "key_points" and "relevant_content", copy the text EXACTLY as it appears in the document. Do not paraphrase or summarize.
+- "key_points": array of 2-4 key points or provisions related to this topic
+- "relevant_content": a brief quote or summary (50-100 words) of the most relevant content
 
 Focus on identifying 5-10 main topics that capture the essential elements of this document.
 Return a JSON array of topics. Return only the JSON array, no other text."""
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",  # Using GPT-4 Omni - most capable model for extraction
+            model="gpt-4o",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=2500,
-            temperature=0  # Set to 0 for exact extraction, not creative paraphrasing
+            temperature=0.3
         )
         
         json_str = response.choices[0].message.content.strip()
@@ -84,13 +82,6 @@ Return a JSON array of topics. Return only the JSON array, no other text."""
             end_idx = json_str.rfind(']')
             if start_idx != -1 and end_idx != -1:
                 json_str = json_str[start_idx:end_idx+1]
-        
-        # Fix invalid JSON escape sequences from corrupted PDF text
-        # The PDF has corrupted text like "aQ\" which creates invalid \escapes
-        import re
-        # Replace backslash followed by a character that's NOT a valid JSON escape
-        # Valid JSON escapes: \", \\, \/, \b, \f, \n, \r, \t, \uXXXX
-        json_str = re.sub(r'\\([^"\\/bfnrtu])', r'\1', json_str)
         
         topics_data = json.loads(json_str)
         

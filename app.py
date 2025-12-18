@@ -245,10 +245,10 @@ Return ONLY the JSON array, nothing else."""
     try:
         print(f"🤖 Calling OpenAI...")
         response = client.chat.completions.create(
-            model="gpt-4o",  # GPT-4 Omni - most capable model
+            model="gpt-4o",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=3000,
-            temperature=0  # More deterministic for consistent section identification
+            temperature=0.3
         )
         
         json_str = response.choices[0].message.content.strip()

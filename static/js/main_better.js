@@ -241,11 +241,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 alignment.doc1_sections.forEach(section => {
                     if (isDirectMethod) {
                         // For direct method, sections are key_points (descriptive text)
-                        // Use fuzzy matching to find this content in the document
+                        // Try to find this text in the document
                         addFallbackHighlight(section.substring(0, 150), doc1Text, doc1Highlights, color, id, topicName);
                     } else {
-                        // For template method, sections are section IDs like "9 Return of Materials"
-                        // First try to find by section ID in the lookup
+                        // For template method, sections are section IDs
                         const matchedSection = findSectionMatch(section, doc1Lookup);
                         if (matchedSection && matchedSection.start_char !== undefined && matchedSection.end_char) {
                             doc1Highlights.push({
@@ -256,15 +255,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                 name: topicName
                             });
                         } else {
-                            // Fallback: use fuzzy matching on the section text
-                            // The section text often contains the title, so search for that
                             addFallbackHighlight(section.substring(0, 120), doc1Text, doc1Highlights, color, id, topicName);
                         }
                     }
                 });
-            } else if (alignment.doc1_summary) {
-                // If no sections but we have a summary, use that for highlighting
-                addFallbackHighlight(alignment.doc1_summary.substring(0, 150), doc1Text, doc1Highlights, color, id, topicName);
             }
             
             // Try to find sections in doc2
@@ -272,11 +266,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 alignment.doc2_sections.forEach(section => {
                     if (isDirectMethod) {
                         // For direct method, sections are key_points (descriptive text)
-                        // Use fuzzy matching to find this content in the document
+                        // Try to find this text in the document
                         addFallbackHighlight(section.substring(0, 150), doc2Text, doc2Highlights, color, id, topicName);
                     } else {
-                        // For template method, sections are section IDs like "6 The Recipient will..."
-                        // First try to find by section ID in the lookup
+                        // For template method, sections are section IDs
                         const matchedSection = findSectionMatch(section, doc2Lookup);
                         if (matchedSection && matchedSection.start_char !== undefined && matchedSection.end_char) {
                             doc2Highlights.push({
@@ -287,14 +280,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                 name: topicName
                             });
                         } else {
-                            // Fallback: use fuzzy matching on the section text
                             addFallbackHighlight(section.substring(0, 120), doc2Text, doc2Highlights, color, id, topicName);
                         }
                     }
                 });
-            } else if (alignment.doc2_summary) {
-                // If no sections but we have a summary, use that for highlighting
-                addFallbackHighlight(alignment.doc2_summary.substring(0, 150), doc2Text, doc2Highlights, color, id, topicName);
             }
         });
         
@@ -523,83 +512,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!searchText) {
             return;
         }
-        
-        // First try exact match (fast path)
         const normalizedDoc = documentText.toLowerCase();
         const normalizedSearch = searchText.toLowerCase();
-        let pos = normalizedDoc.indexOf(normalizedSearch);
-        
+        const pos = normalizedDoc.indexOf(normalizedSearch);
         if (pos !== -1) {
             const length = Math.max(searchText.length, 120);
             highlights.push({
                 start: pos,
                 end: Math.min(pos + length, documentText.length),
-                color,
-                id,
-                name
-            });
-            return;
-        }
-        
-        // If exact match fails, use fuzzy word-based matching
-        // Extract significant words (ignore common words)
-        const commonWords = new Set(['the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 
-                                     'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'should',
-                                     'can', 'could', 'may', 'might', 'must', 'shall', 'to', 'of', 'in', 
-                                     'for', 'on', 'with', 'at', 'by', 'from', 'as', 'or', 'and', 'but',
-                                     'not', 'no', 'any', 'all', 'each', 'this', 'that', 'these', 'those']);
-        
-        // Get significant words from search text (at least 3 chars, not common)
-        const searchWords = normalizedSearch
-            .replace(/[^a-z0-9\s]/g, ' ')
-            .split(/\s+/)
-            .filter(word => word.length >= 3 && !commonWords.has(word))
-            .slice(0, 8); // Use first 8 significant words
-        
-        if (searchWords.length < 2) {
-            return; // Not enough significant words for fuzzy matching
-        }
-        
-        // Find the best matching span in the document
-        // Split document into overlapping windows
-        const words = documentText.split(/\s+/);
-        const windowSize = Math.min(50, Math.max(15, searchWords.length * 3));
-        let bestMatch = null;
-        let bestScore = 0;
-        
-        for (let i = 0; i < words.length - 5; i++) {
-            const windowText = words.slice(i, i + windowSize).join(' ').toLowerCase();
-            
-            // Count how many search words appear in this window
-            let matchCount = 0;
-            for (const word of searchWords) {
-                if (windowText.includes(word)) {
-                    matchCount++;
-                }
-            }
-            
-            const score = matchCount / searchWords.length;
-            
-            // Need at least 50% of significant words to match
-            if (score > bestScore && score >= 0.5) {
-                bestScore = score;
-                
-                // Find the actual position in original text
-                const windowStart = documentText.toLowerCase().indexOf(windowText);
-                if (windowStart !== -1) {
-                    bestMatch = {
-                        start: windowStart,
-                        end: Math.min(windowStart + windowText.length, documentText.length),
-                        score: score
-                    };
-                }
-            }
-        }
-        
-        if (bestMatch) {
-            highlights.push({
-                start: bestMatch.start,
-                end: bestMatch.end,
                 color,
                 id,
                 name

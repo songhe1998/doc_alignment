@@ -123,8 +123,6 @@ def run_topic_direct_alignment(api_key: str, doc1_text: str, doc2_text: str) -> 
     Run the direct topic-alignment workflow (no templates). Uses the
     nda_direct_alignment helper functions under the hood.
     """
-    import re
-    
     start_time = time.time()
     client = create_openai_client(api_key)
 
@@ -147,33 +145,12 @@ def run_topic_direct_alignment(api_key: str, doc1_text: str, doc2_text: str) -> 
             if doc1_topic.topic_name != "[Not Present]"
             else doc2_topic.topic_name
         )
-        
-        # For direct method, use key points as "sections" for display
-        # If no key points, use relevant_content snippet for highlighting
-        doc1_sections = []
-        doc2_sections = []
-        
-        # Use key points if available, otherwise extract from content
-        if doc1_topic.topic_name != "[Not Present]":
-            if doc1_topic.key_points:
-                doc1_sections = doc1_topic.key_points[:3]
-            elif doc1_topic.relevant_content:
-                # Extract meaningful snippets from content for highlighting
-                content_lines = doc1_topic.relevant_content.split('.')[:2]
-                doc1_sections = [line.strip()[:100] for line in content_lines if line.strip()]
-        
-        if doc2_topic.topic_name != "[Not Present]":
-            if doc2_topic.key_points:
-                doc2_sections = doc2_topic.key_points[:3]
-            elif doc2_topic.relevant_content:
-                content_lines = doc2_topic.relevant_content.split('.')[:2]
-                doc2_sections = [line.strip()[:100] for line in content_lines if line.strip()]
 
         entry = {
             "id": idx,
             "topic_name": topic_name,
-            "doc1_sections": doc1_sections,
-            "doc2_sections": doc2_sections,
+            "doc1_sections": doc1_topic.key_points or [],
+            "doc2_sections": doc2_topic.key_points or [],
             "doc1_summary": doc1_topic.relevant_content,
             "doc2_summary": doc2_topic.relevant_content,
             "differences": alignment.key_differences,
